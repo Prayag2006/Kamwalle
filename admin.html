@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAMWALLE - Admin Portal</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Admin Stylesheet -->
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-wrapper">
+        <div class="login-box">
+            <div class="logo-circle">
+                <i class="ph-fill ph-lock-key"></i>
+            </div>
+            <h2>Admin Portal Access</h2>
+            <p>Please enter your secure administrative credentials to view customer submissions.</p>
+            <form id="adminLoginForm">
+                <input type="password" id="adminPassword" placeholder="Enter Admin Password" required class="admin-input">
+                <button type="submit" class="btn btn-primary btn-full">Secure Login</button>
+            </form>
+            <div id="loginError" class="error-msg hidden">
+                <i class="ph ph-warning-circle"></i> Incorrect password attempt.
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="admin-wrapper hidden">
+        <header class="admin-header">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <i class="ph-fill ph-house-line"></i>
+                    KAMWALLE<span>.</span> Admin
+                </a>
+                <button id="logoutBtn" class="btn btn-outline btn-sm">
+                    <i class="ph ph-sign-out"></i> Logout
+                </button>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            <div class="admin-top">
+                <div class="page-title">
+                    <h2>Admin Dashboard</h2>
+                    <p>Manage customer requests and service bookings.</p>
+                </div>
+                <div class="stat-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="ph-fill ph-users"></i></div>
+                        <div class="stat-info">
+                            <h3>Contact Requests</h3>
+                            <p id="totalRequests">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card--booking">
+                        <div class="stat-icon"><i class="ph-fill ph-calendar-check"></i></div>
+                        <div class="stat-info">
+                            <h3>Bookings</h3>
+                            <p id="totalBookings">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card--auth">
+                        <div class="stat-icon"><i class="ph-fill ph-user-circle"></i></div>
+                        <div class="stat-info">
+                            <h3>Registered Users</h3>
+                            <p id="totalUsers">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="switchTab('contacts')"><i class="ph ph-envelope-simple"></i> Contact Requests</button>
+                <button class="tab-btn" onclick="switchTab('bookings')"><i class="ph ph-calendar-check"></i> Bookings</button>
+                <button class="tab-btn" onclick="switchTab('users')"><i class="ph ph-user-list"></i> Registered Users</button>
+            </div>
+
+            <!-- Contacts Tab -->
+            <div class="tab-content" id="tab-contacts">
+                <div class="table-container">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Date Received</th>
+                                <th>Customer Name</th>
+                                <th>Contact Info</th>
+                                <th>Address &amp; Postal Code</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactTableBody">
+                            <!-- JS injected content goes here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state hidden">
+                    <div class="empty-icon"><i class="ph-fill ph-folder-open"></i></div>
+                    <h3>No Contact Requests</h3>
+                    <p>Contact form submissions will appear here once customers reach out.</p>
+                </div>
+            </div>
+
+            <!-- Bookings Tab -->
+            <div class="tab-content hidden" id="tab-bookings">
+                <div class="table-container" id="bookingsTableContainer">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Address</th>
+                                <th>Contact Info</th>
+                                <th>Amount</th>
+                                <th>Payment ID</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingsTableBody">
+                            <!-- JS injected -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyBookings" class="empty-state hidden">
+                    <div class="empty-icon"><i class="ph-fill ph-calendar-blank"></i></div>
+                    <h3>No Bookings Yet</h3>
+                    <p>Service bookings made through the "Book Now" flow will appear here.</p>
+                </div>
+            </div>
+            <!-- Users Tab -->
+            <div class="tab-content hidden" id="tab-users">
+                <div class="table-container" id="usersTableContainer">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Registration Date</th>
+                                <th>Full Name</th>
+                                <th>Email Address</th>
+                                <th>Phone Number</th>
+                                <th>User ID (UID)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- JS injected -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyUsers" class="empty-state hidden">
+                    <div class="empty-icon"><i class="ph-fill ph-users-three"></i></div>
+                    <h3>No Users Yet</h3>
+                    <p>When users register or sign in with Google, they will appear here.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Admin Logic -->
+    <script type="module" src="admin.js"></script>
+</body>
+</html>

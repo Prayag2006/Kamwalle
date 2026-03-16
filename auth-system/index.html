@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Link Login | Firebase Auth</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="auth-container">
+        <!-- Step 1: Login Card -->
+        <div class="auth-card" id="loginCard">
+            <div class="auth-header">
+                <div class="logo-circle">
+                    <i class="ph-fill ph-house-line"></i>
+                </div>
+                <h1>Welcome to Kamwalle</h1>
+                <p>Enter your email to receive a secure login link. No password required.</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="ph ph-envelope-simple"></i>
+                        <input type="email" id="email" placeholder="name@example.com" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="sendLinkBtn">
+                    <span>Send Login Link</span>
+                    <i class="ph ph-paper-plane-tilt"></i>
+                </button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>By continuing, you agree to our <a href="#">Terms of Service</a>.</p>
+            </div>
+        </div>
+
+        <!-- Step 2: Link Sent / Waiting Card -->
+        <div class="auth-card hidden" id="waitingCard">
+            <div class="auth-header">
+                <div class="logo-circle pulse">
+                    <i class="ph-fill ph-envelope-open"></i>
+                </div>
+                <h1>Check Your Email</h1>
+                <p>We've sent a magic login link to <strong id="displayEmail">user@example.com</strong></p>
+            </div>
+
+            <div class="status-box">
+                <div class="spinner-small"></div>
+                <span>Waiting for you to click the link...</span>
+            </div>
+
+            <div class="instructions">
+                <p><i class="ph ph-info"></i> Click the link in your email to complete the sign-in on this device.</p>
+            </div>
+
+            <button class="btn-back" onclick="location.reload()">
+                <i class="ph ph-caret-left"></i> Use a different email
+            </button>
+        </div>
+
+        <!-- Step 3: Success Card -->
+        <div class="auth-card hidden" id="successCard">
+            <div class="auth-header">
+                <div class="success-icon">
+                    <i class="ph ph-check"></i>
+                </div>
+                <h1>Success!</h1>
+                <p>You have been successfully authenticated.</p>
+            </div>
+
+            <div class="user-profile">
+                <div class="profile-info">
+                    <span class="label">Authenticated as</span>
+                    <span class="value" id="finalUserEmail">user@example.com</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="window.location.href='../index.html'">
+                <span>Go to Homepage</span>
+                <i class="ph ph-house"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification System -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Firebase Logic -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>

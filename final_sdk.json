@@ -1,0 +1,17 @@
+﻿{
+  "status": "success",
+  "result": {
+    "fileName": "firebase-js-config.json",
+    "fileContents": "{\n  \"projectId\": \"skin-problem-auth-12345\",\n  \"appId\": \"1:853846932957:web:bcea6617ba4ce886fb0a34\",\n  \"storageBucket\": \"skin-problem-auth-12345.firebasestorage.app\",\n  \"apiKey\": \"AIzaSyDfh8i1IGD0008nE5dzD-xsXku-Sopw8hw\",\n  \"authDomain\": \"skin-problem-auth-12345.firebaseapp.com\",\n  \"messagingSenderId\": \"853846932957\",\n  \"projectNumber\": \"853846932957\",\n  \"version\": \"2\"\n}",
+    "sdkConfig": {
+      "projectId": "skin-problem-auth-12345",
+      "appId": "1:853846932957:web:bcea6617ba4ce886fb0a34",
+      "storageBucket": "skin-problem-auth-12345.firebasestorage.app",
+      "apiKey": "AIzaSyDfh8i1IGD0008nE5dzD-xsXku-Sopw8hw",
+      "authDomain": "skin-problem-auth-12345.firebaseapp.com",
+      "messagingSenderId": "853846932957",
+      "projectNumber": "853846932957",
+      "version": "2"
+    }
+  }
+}

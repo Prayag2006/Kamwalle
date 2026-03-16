@@ -1,0 +1,21 @@
+[debug] [2026-03-13T19:37:45.122Z] ----------------------------------------------------------------------
+[debug] [2026-03-13T19:37:45.182Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\91942\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting firestore
+[debug] [2026-03-13T19:37:45.190Z] CLI Version:   15.1.0
+[debug] [2026-03-13T19:37:45.191Z] Platform:      win32
+[debug] [2026-03-13T19:37:45.192Z] Node Version:  v24.13.0
+[debug] [2026-03-13T19:37:45.195Z] Time:          Sat Mar 14 2026 01:07:45 GMT+0530 (India Standard Time)
+[debug] [2026-03-13T19:37:45.195Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-03-13T19:38:00.582Z] Object "" in "firebase.json" has unknown property: {"additionalProperty":"auth"}
+[error] 
+[error] Error: Cannot understand what targets to deploy/serve. No targets in firebase.json match '--only hosting firestore'. If you are using PowerShell make sure you place quotes around any comma-separated lists (ex: --only "functions,firestore").
+[debug] [2026-03-13T19:38:01.303Z] Error: EBUSY: resource busy or locked, unlink 'D:\RNW\Kamwala\firebase-debug.log'
+    at Object.unlinkSync (node:fs:1945:11)
+    at process.<anonymous> (C:\Users\91942\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\cli.js:44:16)
+    at process.emit (node:events:520:35)
+    at process.exit (node:internal/process/per_thread:236:15)
+    at Timeout._onTimeout (C:\Users\91942\AppData\Roaming\npm\node_modules\firebase-tools\lib\errorOut.js:20:17)
+    at listOnTimeout (node:internal/timers:605:17)
+    at process.processTimers (node:internal/timers:541:7)
+[error] 
+[error] Error: An unexpected error has occurred.

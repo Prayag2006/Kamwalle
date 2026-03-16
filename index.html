@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KAMWALLE - Premium Domestic Help & Cleaning Services</title>
+    <meta name="description" content="KAMWALLE provides top-tier professional domestic help, cleaning, cooking, and home services. Book your service today for a spotless and comfortable home.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="shortcut icon" href="assets/kamwalle_logo.png" type="image/png">
+    
+    <!-- Phosphor Icons for elegant minimalist icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="menu-overlay" id="menu-overlay"></div>
+
+    <!-- Header Section -->
+    <header class="header" id="header">
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <i class="ph-fill ph-house-line"></i>
+                KAMWALLE<span>.</span>
+            </a>
+            
+            <nav class="navbar" id="navbar">
+                <ul class="nav-list">
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="#services" class="nav-link">Our Services</a></li>
+                    <li><a href="#safety" class="nav-link">Safety</a></li>
+                    <li><a href="#features" class="nav-link">Why Us</a></li>
+                    <li><a href="#pricing" class="nav-link">Packages</a></li>
+                    <li><a href="#testimonials" class="nav-link">Reviews</a></li>
+                    <li><a href="#contact" class="nav-link">Contact Us</a></li>
+                </ul>
+                <div class="nav-mobile-actions mobile-visible">
+                    <button class="btn btn-primary btn-full btn-primary-mobile" style="margin-bottom: 1rem;" onclick="window.openBookingModal ? openBookingModal() : null">Book Now</button>
+                    <div class="auth-header-links auth-ui-group">
+                        <button class="btn btn-outline btn-sm login-btn-trigger" onclick="openAuthModal('login')">Login</button>
+                    </div>
+                    <div class="user-profile-header profile-ui-group hidden">
+                        <div class="profile-dropdown">
+                            <button class="profile-trigger" id="profileTriggerMobile">
+                                <i class="ph-fill ph-user-circle"></i>
+                                <span class="header-user-name">Profile</span>
+                                <i class="ph ph-caret-down"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a href="profile.html"><i class="ph ph-user"></i> My Profile</a>
+                                <a href="#" onclick="handleLogout()"><i class="ph ph-sign-out"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="btn btn-primary" id="headerBookBtn" onclick="window.openBookingModal ? openBookingModal() : console.log('Script loading...')">Book Now</button>
+                
+                <!-- Desktop Auth container -->
+                <div class="desktop-visible" style="display: flex; align-items: center;">
+                    <div class="auth-header-links auth-ui-group">
+                        <button class="btn btn-outline btn-sm login-btn-trigger" onclick="openAuthModal('login')">Login</button>
+                    </div>
+                    <div class="user-profile-header profile-ui-group hidden">
+                        <div class="profile-dropdown">
+                            <button class="profile-trigger" id="profileTriggerDesktop">
+                                <i class="ph-fill ph-user-circle"></i>
+                                <span class="header-user-name">Profile</span>
+                                <i class="ph ph-caret-down"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a href="profile.html"><i class="ph ph-user"></i> My Profile</a>
+                                <a href="#" onclick="handleLogout()"><i class="ph ph-sign-out"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">
+                    <i class="ph ph-list"></i>
+                </button>
+            </div>
+        </div>
+
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-background"></div>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <span class="badge">#1 Trusted Home Services</span>
+                <h1 class="hero-title">Experience a pristine home, effortlessly.</h1>
+                <p class="hero-description">KAMWALLE connects you with verified, professional domestic helps, cleaners, and culinary experts to make your daily life smoother and stress-free.</p>
+                <div class="hero-buttons">
+                    <a href="#services" class="btn btn-primary btn-large">Explore Services <i class="ph ph-arrow-right"></i></a>
+                    <div class="rating-badge">
+                        <div class="stars">
+                            <i class="ph-fill ph-star"></i>
+                            <i class="ph-fill ph-star"></i>
+                            <i class="ph-fill ph-star"></i>
+                            <i class="ph-fill ph-star"></i>
+                            <i class="ph-fill ph-star"></i>
+                        </div>
+                        <span>4.9/5 from 10k+ customers</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-image-wrapper">
+                <div class="image-ornament"></div>
+                <img src="assets/hero_image_kamwala_1773064866580.png" alt="Luxurious Modern Home Interior" class="hero-image">
+                
+                <!-- Floating Info Card -->
+                <div class="floating-card popup-card-1">
+                    <div class="icon-box"><i class="ph-fill ph-shield-check"></i></div>
+                    <div class="card-text">
+                        <h4>100% Verified</h4>
+                        <p>Background checked staff</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Packages Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-header">
+                <span class="sub-title">Monthly Value</span>
+                <h2 class="section-title">Affordable Monthly Packages</h2>
+                <p class="section-para">Consistent premium service at an unbeatable price. Subscribe to our monthly plan and forget about the daily chores.</p>
+            </div>
+            
+            <div class="pricing-card">
+                <div class="pricing-header">
+                    <h3>Essential Home Package</h3>
+                    <div class="price-wrapper">
+                        <span class="currency">₹</span>
+                        <span class="price">1800</span>
+                        <span class="duration">/month</span>
+                    </div>
+                </div>
+                <div class="pricing-body">
+                    <ul class="pricing-features">
+                        <li><i class="ph-fill ph-check-circle"></i> Daily House Cleaning (Sweeping & Mopping)</li>
+                        <li><i class="ph-fill ph-check-circle"></i> Daily Crockery & Utensil Cleaning</li>
+                        <li><i class="ph-fill ph-check-circle"></i> 100% Verified, Professional Staff</li>
+                        <li><i class="ph-fill ph-check-circle"></i> Free Replacement Guarantee</li>
+                        <li><i class="ph-fill ph-check-circle"></i> Flexible Timings</li>
+                    </ul>
+                    <a href="javascript:void(0)" onclick="window.openBookingModal ? openBookingModal() : null" class="btn btn-primary btn-large">Subscribe Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <div class="section-header">
+                <span class="sub-title">What We Do</span>
+                <h2 class="section-title">Premium Services for Your Home</h2>
+                <p class="section-para">From sparkling floors to delicious meals, we provide a complete suite of services tailored to your lifestyle.</p>
+            </div>
+            
+            <div class="services-grid">
+                <!-- Service Card 1 - Deep Cleaning -->
+                <div class="service-card service-card--featured">
+                    <div class="card-image-wrapper">
+                        <img src="assets/lady_cleaning_service.png" alt="Deep Home Cleaning" class="card-image">
+                        <div class="card-overlay"></div>
+                        <div class="card-tag">Most Popular</div>
+                        <div class="card-overlay-content">
+                            <span class="card-price">Starting &#8377;499</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon-badge"><i class="ph-fill ph-broom"></i></div>
+                        <h3>Deep Home Cleaning</h3>
+                        <p>Thorough cleaning of every corner of your house by equipped, KAMWALLE-uniformed professionals.</p>
+                        <div class="card-features">
+                            <span class="feature-pill"><i class="ph ph-check"></i> Eco-Friendly</span>
+                            <span class="feature-pill"><i class="ph ph-check"></i> All Rooms</span>
+                        </div>
+                        <a href="#book-service" class="link-btn">Book Cleaning <i class="ph ph-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Service Card 2 - Cooking -->
+                <div class="service-card service-card--featured">
+                    <div class="card-image-wrapper">
+                        <img src="assets/lady_cooking_service.png" alt="Professional Cooking Services" class="card-image">
+                        <div class="card-overlay"></div>
+                        <div class="card-overlay-content">
+                            <span class="card-price">Starting &#8377;599</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-icon-badge"><i class="ph-fill ph-cooking-pot"></i></div>
+                        <h3>Cooking Services</h3>
+                        <p>Experienced cooks who prepare delicious, healthy meals tailored to your family's taste.</p>
+                        <div class="card-features">
+                            <span class="feature-pill"><i class="ph ph-check"></i> Veg &amp; Non-Veg</span>
+                            <span class="feature-pill"><i class="ph ph-check"></i> Diet Plans</span>
+                        </div>
+                        <a href="#book-service" class="link-btn">Book a Cook <i class="ph ph-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Service Card 3 - Maid -->
+                <div class="service-card service-card--glass">
+                    <div class="card-glass-bg"></div>
+                    <div class="card-content">
+                        <div class="card-icon-badge card-icon-badge--lg"><i class="ph ph-sparkle"></i></div>
+                        <h3>Maid / Domestic Help</h3>
+                        <p>Reliable daily helpers for sweeping, mopping, washing, and organizing. Verified maids on-demand with body cameras.</p>
+                        <div class="card-features">
+                            <span class="feature-pill"><i class="ph ph-check"></i> Daily Service</span>
+                            <span class="feature-pill"><i class="ph ph-check"></i> Verified</span>
+                            <span class="feature-pill"><i class="ph ph-check"></i> Body Cam</span>
+                        </div>
+                        <a href="#book-service" class="btn btn-outline">Explore More</a>
+                    </div>
+                </div>
+                
+                <!-- Service Card 4 - Pest Control -->
+                <div class="service-card service-card--dark">
+                    <div class="card-content">
+                        <div class="card-icon-badge card-icon-badge--lg card-icon-badge--dark"><i class="ph ph-bug"></i></div>
+                        <h3>Pest Control</h3>
+                        <p>Say goodbye to pests with our eco-friendly, highly effective treatments for apartments and villas.</p>
+                        <div class="card-features">
+                            <span class="feature-pill feature-pill--dark"><i class="ph ph-check"></i> Certified</span>
+                            <span class="feature-pill feature-pill--dark"><i class="ph ph-check"></i> 30-Day Warranty</span>
+                        </div>
+                        <a href="#book-service" class="btn btn-white">Explore More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <span class="sub-title">Simple Process</span>
+                <h2 class="section-title">How KAMWALLE Works</h2>
+                <p class="section-para">Get your home sorted in three simple, stress-free steps.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <div class="step-icon"><i class="ph-fill ph-calendar-plus"></i></div>
+                    <h3>Book Service</h3>
+                    <p>Choose your service and pick a convenient time slot online or via a quick call.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <div class="step-icon"><i class="ph-fill ph-user-check"></i></div>
+                    <h3>Pro Arrives</h3>
+                    <p>A background-verified professional arrives at your doorstep fully equipped.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <div class="step-icon"><i class="ph-fill ph-coffee"></i></div>
+                    <h3>Sit & Relax</h3>
+                    <p>Enjoy your free time while we transform your home with premium care.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust & Safety Section -->
+    <section class="trust-safety" id="safety">
+        <div class="container trust-container">
+            <div class="trust-image-wrapper">
+                <div class="blob-bg"></div>
+                <img src="assets/lady_worker_trust.png" alt="KAMWALLE Professional Worker with Camera" class="trust-image">
+                <div class="trust-badge">
+                    <i class="ph-fill ph-video-camera"></i>
+                    <span>Live Monitored</span>
+                </div>
+            </div>
+            
+            <div class="trust-content">
+                <span class="sub-title">100% Quality Assurance</span>
+                <h2 class="section-title">Body-Cam Monitored & Fully Protected</h2>
+                <p class="section-para">Your safety and our service quality are our highest priorities. Every KAMWALLE professional arrives fully equipped with specialized premium gear to maintain utmost hygiene and absolute transparency.</p>
+                
+                <ul class="trust-list">
+                    <li>
+                        <div class="trust-icon"><i class="ph-fill ph-video-camera"></i></div>
+                        <div class="trust-text">
+                            <h4>Body Cameras for Total Transparency</h4>
+                            <p>Our workers are equipped with on-body cameras. This allows our quality control team to monitor the workload in real-time, ensuring zero shortcuts, professional demeanor, and premium quality every single visit.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="trust-icon"><i class="ph-fill ph-shield-check"></i></div>
+                        <div class="trust-text">
+                            <h4>Mandatory Mask & Company Cap</h4>
+                            <p>Hygiene is non-negotiable. Our skilled staff strictly wears sanitary masks and structured company-issued caps while inside your home, actively preventing dust and contamination.</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="trust-icon"><i class="ph-fill ph-t-shirt"></i></div>
+                        <div class="trust-text">
+                            <h4>Clean Branded Uniforms</h4>
+                            <p>Easily identify your trusted KAMWALLE professional. Our sanitized, premium blue polo uniforms promote a safe, credible atmosphere while they meticulously work on your requests.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="features" id="features">
+        <div class="container features-container">
+            <div class="features-content">
+                <span class="sub-title">Why KAMWALLE?</span>
+                <h2 class="section-title">The Standard of Excellence in Domestic Services.</h2>
+                <p class="section-para">We don't just send someone to your house—we send a trained professional who knows how to respect your space while delivering exceptional results.</p>
+                
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-icon"><i class="ph ph-check-circle"></i></div>
+                        <div class="feature-text">
+                            <h4>Rigorous Vetting Process</h4>
+                            <p>Every professional undergoes a strict background check and identity verification.</p>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon"><i class="ph ph-calendar-check"></i></div>
+                        <div class="feature-text">
+                            <h4>Flexible Scheduling</h4>
+                            <p>Book on-demand, or schedule recurring visits that fit perfectly into your busy life.</p>
+                        </div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon"><i class="ph ph-credit-card"></i></div>
+                        <div class="feature-text">
+                            <h4>Transparent Pricing</h4>
+                            <p>No hidden fees. You see exactly what you pay for before making any commitment.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="features-visual">
+                <div class="glass-box highlight-box-1">
+                    <h3>25,000+</h3>
+                    <p>Homes Cleaned</p>
+                </div>
+                <div class="glass-box highlight-box-2">
+                    <h3>99%</h3>
+                    <p>Satisfaction Rate</p>
+                </div>
+                <div class="pattern-bg"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-header">
+                <span class="sub-title">Client Stories</span>
+                <h2 class="section-title">Loved by Thousands</h2>
+                <p class="section-para">See what our satisfied customers have to say about our premium professional services.</p>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="testimo-card">
+                    <div class="stars">
+                        <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                    </div>
+                    <p class="testimo-text">"The house cleaning was phenomenal. The team was punctual, completely professional, and my house has never looked so spotless. Highly recommended!"</p>
+                    <div class="testimo-author">
+                        <div class="author-avatar">AM</div>
+                        <div class="author-info">
+                            <h4>Ananya Mehta</h4>
+                            <span>Gandhinagar</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimo-card">
+                    <div class="stars">
+                        <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                    </div>
+                    <p class="testimo-text">"Started the monthly subscription for maid service and it's totally worth it. It gives me incredible peace of mind knowing the background checks are done."</p>
+                    <div class="testimo-author">
+                        <div class="author-avatar">RS</div>
+                        <div class="author-info">
+                            <h4>Rohan Sharma</h4>
+                            <span>Ahmedabad</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimo-card">
+                    <div class="stars">
+                        <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star-half"></i>
+                    </div>
+                    <p class="testimo-text">"The cooking service is a lifesaver. The chef arrives on time, prepares delicious and healthy food exactly to our family's taste, and leaves the kitchen completely clean."</p>
+                    <div class="testimo-author">
+                        <div class="author-avatar">KP</div>
+                        <div class="author-info">
+                            <h4>Kavita Patel</h4>
+                            <span>Gandhinagar</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section" id="faq">
+        <div class="container faq-container">
+            <div class="faq-content">
+                <span class="sub-title">Got Questions?</span>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <p class="section-para">Everything you need to know about our services, pricing, and safety measures.</p>
+            </div>
+            
+            <div class="faq-accordion">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Are all your professionals background checked?</h4>
+                        <i class="ph ph-caret-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, 100%. We employ a rigorous vetting process including police verification, identity checks, and extensive background screening for every single professional.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>Do I need to provide cleaning supplies?</h4>
+                        <i class="ph ph-caret-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No, our professionals carry their own specialized, eco-friendly cleaning kits and equipment. If you prefer us to use your products, just let us know during booking.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h4>What happens on the monthly plan if staff takes leave?</h4>
+                        <i class="ph ph-caret-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We provide a 100% replacement guarantee. If your designated professional is unavailable, we will automatically assign another verified professional to ensure zero disruption to your routine.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Meet Our Team Section -->
+    <section class="meet-team" id="team">
+        <div class="container">
+            <div class="section-header">
+                <span class="sub-title">Our Professionals</span>
+                <h2 class="section-title">Meet Our Dedicated Team</h2>
+                <p class="section-para">Our trained, verified women professionals are the heart of KAMWALLE. Each team member is equipped with body cameras, masks, and branded uniforms.</p>
+            </div>
+
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-img-wrap">
+                        <img src="assets/lady_worker_trust.png" alt="KAMWALLE Professional" class="team-photo">
+                        <div class="team-badge"><i class="ph-fill ph-shield-check"></i> Verified</div>
+                    </div>
+                    <div class="team-info">
+                        <h4>Sunita Devi</h4>
+                        <span>Senior Cleaning Expert</span>
+                        <p>5+ years of experience in deep home cleaning and organization.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-img-wrap">
+                        <img src="assets/lady_cooking_service.png" alt="KAMWALLE Chef" class="team-photo">
+                        <div class="team-badge"><i class="ph-fill ph-shield-check"></i> Verified</div>
+                    </div>
+                    <div class="team-info">
+                        <h4>Rekha Patel</h4>
+                        <span>Professional Cook</span>
+                        <p>Specializes in Gujarati, North Indian, and healthy diet meals.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-img-wrap">
+                        <img src="assets/lady_cleaning_service.png" alt="KAMWALLE Maid" class="team-photo">
+                        <div class="team-badge"><i class="ph-fill ph-shield-check"></i> Verified</div>
+                    </div>
+                    <div class="team-info">
+                        <h4>Meena Kumari</h4>
+                        <span>Daily Home Helper</span>
+                        <p>Trusted daily maid service with 3+ years of consistent ratings.</p>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-img-wrap">
+                        <img src="assets/lady_worker_contact.png" alt="KAMWALLE Lead" class="team-photo">
+                        <div class="team-badge"><i class="ph-fill ph-shield-check"></i> Verified</div>
+                    </div>
+                    <div class="team-info">
+                        <h4>Priya Sharma</h4>
+                        <span>Team Leader</span>
+                        <p>Supervises quality for all residential projects across Gandhinagar.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="team-group-banner">
+                <img src="assets/lady_team_group.png" alt="KAMWALLE Women Team" class="team-group-img">
+                <div class="team-group-text">
+                    <h3>Empowering Women, One Home at a Time</h3>
+                    <p>At KAMWALLE, we are proud to employ and train women from local communities, providing them with stable income, professional uniforms, safety gear, and dignity. Every booking you make contributes to empowering women across Gujarat.</p>
+                    <a href="#contact" class="btn btn-primary">Join Our Team</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Areas Section -->
+    <section class="service-areas" id="areas">
+        <div class="container">
+            <div class="section-header">
+                <span class="sub-title">Where We Operate</span>
+                <h2 class="section-title">Service Areas in Gandhinagar</h2>
+                <p class="section-para">We currently provide premium home services across key areas of Gandhinagar, Gujarat. Check if your locality is covered!</p>
+            </div>
+
+            <div class="areas-grid">
+                <div class="area-card"><i class="ph-fill ph-map-pin"></i><h4>Sector 1-7</h4><p>Full coverage with all services</p></div>
+                <div class="area-card"><i class="ph-fill ph-map-pin"></i><h4>Sector 8-15</h4><p>Full coverage with all services</p></div>
+                <div class="area-card"><i class="ph-fill ph-map-pin"></i><h4>Sector 16-21</h4><p>Full coverage with all services</p></div>
+                <div class="area-card"><i class="ph-fill ph-map-pin"></i><h4>Sector 22-30</h4><p>Full coverage with all services</p></div>
+                <div class="area-card"><i class="ph-fill ph-map-pin"></i><h4>Infocity Area</h4><p>IT Hub residential areas</p></div>
+                <div class="area-card"><i class="ph-fill ph-map-pin"></i><h4>Kudasan & Sargasan</h4><p>Extended coverage zone</p></div>
+                <div class="area-card"><i class="ph-fill ph-map-pin"></i><h4>Raysan & Pethapur</h4><p>Nearby township services</p></div>
+                <div class="area-card"><i class="ph-fill ph-map-pin"></i><h4>GIFT City Zone</h4><p>Premium corporate housing</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Booking Banner -->
+    <section class="cta-section" id="book-service">
+        <div class="container">
+            <div class="cta-box">
+                <div class="cta-text">
+                    <h2>Ready to get your free time back?</h2>
+                    <p>Book a KAMWALLE service in under 60 seconds and let us handle your chores.</p>
+                </div>
+                <div class="cta-action">
+                    <form class="quick-book-form" id="bookingForm">
+                        <input type="text" placeholder="Enter your Zip / Pincode" class="form-input" required>
+                        <button type="submit" class="btn btn-primary btn-large">Check Availability</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/919510049503?text=Hi%20KAMWALLE,%20I%20have%20a%20query%20about%20your%20services." class="whatsapp-float" target="_blank" aria-label="Chat with us on WhatsApp">
+        <i class="ph-fill ph-whatsapp-logo"></i>
+    </a>
+
+    <!-- Contact Us Section -->
+    <section class="contact-section" id="contact">
+        <div class="container contact-container">
+            <div class="contact-info-blocks">
+                <span class="sub-title">Get In Touch</span>
+                <h2 class="section-title">Schedule a Visit Now</h2>
+                <p class="section-para">Have a specific request or need a custom quote? Fill out the form, and our support team will reach out to you directly.</p>
+                <img src="assets/lady_worker_contact.png" alt="Friendly Customer Support" class="contact-support-img">
+            </div>
+            
+            <div class="contact-form-wrapper">
+                <form id="contactUsForm" class="contact-form">
+                    <div class="form-group">
+                        <label for="c_name">Full Name</label>
+                        <input type="text" id="c_name" name="c_name" required placeholder="E.g. Rohan Sharma" class="form-input-box">
+                    </div>
+                    <div class="form-group">
+                        <label for="c_email">Email Address</label>
+                        <input type="email" id="c_email" name="c_email" required placeholder="E.g. rohan@example.com" class="form-input-box">
+                    </div>
+                    <div class="form-group">
+                        <label for="c_phone">Phone Number</label>
+                        <input type="tel" id="c_phone" name="c_phone" required placeholder="E.g. +91 98765 43210" class="form-input-box">
+                    </div>
+                    <div class="form-group">
+                        <label for="c_address">Current Address</label>
+                        <textarea id="c_address" name="c_address" required rows="2" placeholder="Street, Apartment, Neighborhood" class="form-input-box"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="c_postal">Postal Code / Zip</label>
+                        <input type="text" id="c_postal" name="c_postal" required placeholder="E.g. 382010" class="form-input-box">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-full" id="contactSubmitBtn">Submit Request</button>
+                    <div id="contactFormSuccess" class="form-success-msg hidden">Request submitted successfully! We will contact you soon.</div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col brand-col">
+                    <a href="#" class="logo footer-logo">
+                        <i class="ph-fill ph-house-line"></i>
+                        KAMWALLE<span>.</span>
+                    </a>
+                    <p>The premium destination for all your home service needs. Verified professionals, unmatched quality. KAMWALLE is a proud subsidiary of <strong>Shreyag Company</strong>.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="ph-fill ph-instagram-logo"></i></a>
+                        <a href="#"><i class="ph-fill ph-facebook-logo"></i></a>
+                        <a href="#"><i class="ph-fill ph-twitter-logo"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#features">About Us</a></li>
+                        <li><a href="#team">Careers</a></li>
+                        <li><a href="#faq">Privacy Policy</a></li>
+                        <li><a href="#faq">Terms of Service</a></li>
+                        <li><a href="admin.html" target="_blank">Admin Portal</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="#services">Deep Cleaning</a></li>
+                        <li><a href="#services">Cooking &amp; Chef</a></li>
+                        <li><a href="#services">Maid Service</a></li>
+                        <li><a href="#services">Pest Control</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <ul class="contact-info">
+                        <li><i class="ph ph-phone"></i> +91 98765 43210</li>
+                        <li><i class="ph ph-envelope-simple"></i> infokamwalle@gmail.com</li>
+                        <li><i class="ph ph-map-pin"></i> Gandhinagar, Gujarat, India</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <span id="currentYear"></span> KAMWALLE Services Pvt. Ltd. | A <strong>Shreyag Company</strong> Venture. All rights reserved.</p>
+                <div class="payment-methods">
+                    <span class="pay-badge pay-gpay"><i class="ph-fill ph-google-logo"></i> GPay</span>
+                    <span class="pay-badge pay-paytm">₹ Paytm</span>
+                    <span class="pay-badge pay-upi"><i class="ph ph-qr-code"></i> UPI</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Booking Modal -->
+    <div class="booking-modal-overlay" id="bookingModalOverlay">
+        <div class="booking-modal">
+            <button class="modal-close" id="modalCloseBtn" onclick="closeBookingModal()">&times;</button>
+            
+            <!-- Progress Steps -->
+            <div class="booking-steps">
+                <div class="step-indicator active" id="stepInd1"><span>1</span> Address</div>
+                <div class="step-line" id="stepLine1"></div>
+                <div class="step-indicator" id="stepInd2"><span>2</span> Verify</div>
+                <div class="step-line" id="stepLine2"></div>
+                <div class="step-indicator" id="stepInd3"><span>3</span> Payment</div>
+            </div>
+
+            <!-- Step 1: Address Details -->
+            <div class="booking-step-content" id="bookStep1">
+                <h3><i class="ph ph-map-pin"></i> Your Address Details</h3>
+                <p class="step-desc">Tell us where the service is needed</p>
+                <div class="modal-form">
+                    <div class="form-group">
+                        <label for="b_name">Full Name *</label>
+                        <input type="text" id="b_name" required placeholder="E.g. Priya Sharma" class="form-input-box">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="b_flat">Flat / House No. *</label>
+                            <input type="text" id="b_flat" required placeholder="E.g. A-204" class="form-input-box">
+                        </div>
+                        <div class="form-group">
+                            <label for="b_street">Street / Society *</label>
+                            <input type="text" id="b_street" required placeholder="E.g. Shanti Nagar" class="form-input-box">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="b_city">City *</label>
+                            <input type="text" id="b_city" value="Gandhinagar" required class="form-input-box">
+                        </div>
+                        <div class="form-group">
+                            <label for="b_pin">Pincode *</label>
+                            <input type="text" id="b_pin" required placeholder="E.g. 382010" maxlength="6" class="form-input-box">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="b_phone">Phone Number *</label>
+                            <input type="tel" id="b_phone" required placeholder="9876543210" maxlength="10" class="form-input-box">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="b_service">Service Type *</label>
+                        <select id="b_service" class="form-input-box" required>
+                            <option value="">Select a service</option>
+                            <option value="cleaning">Deep Home Cleaning - ₹499</option>
+                            <option value="cooking">Cooking Service - ₹599</option>
+                            <option value="maid">Maid / Domestic Help - ₹399</option>
+                            <option value="pest">Pest Control - ₹999</option>
+                            <option value="monthly">Monthly Package - ₹1800/mo</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="goToStep2()">Continue to Verification <i class="ph ph-arrow-right"></i></button>
+                </div>
+            </div>
+
+            <!-- Step 2: Email Magic Link Verification -->
+            <div class="booking-step-content hidden" id="bookStep2">
+                <h3><i class="ph ph-envelope-simple"></i> One-Click Verification</h3>
+                <p class="step-desc">We'll send a secure login link to your email. No code entry required.</p>
+                <div class="modal-form">
+                    <div class="form-group">
+                        <label for="b_email">Email Address *</label>
+                        <input type="email" id="b_email" required placeholder="hello@example.com" class="form-input-box">
+                    </div>
+                    <button class="btn btn-primary btn-full" id="sendOtpBtn" onclick="sendOTP()">Send Magic Login Link <i class="ph ph-paper-plane-tilt"></i></button>
+                    
+                    <div class="otp-section hidden" id="otpSection">
+                        <div class="status-box">
+                            <div class="spinner-small"></div>
+                            <span>Verification link sent! Waiting for your click...</span>
+                        </div>
+                        <div class="instructions" style="background: rgba(15, 98, 254, 0.05); padding: 1rem; border-radius: 12px; margin-bottom: 1rem;">
+                            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
+                                <i class="ph ph-info"></i> Please check your inbox (and spam) for the link. This page will <strong>automatically proceed</strong> once you click it.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-outline btn-full" id="backBtnStep2" style="margin-top:0.75rem" onclick="goBackToStep1()"><i class="ph ph-arrow-left"></i> Back</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Payment -->
+            <div class="booking-step-content hidden" id="bookStep3">
+                <h3><i class="ph ph-credit-card"></i> Complete Payment</h3>
+                <p class="step-desc">Secure payment powered by Razorpay</p>
+                <div class="modal-form">
+                    <div class="order-summary">
+                        <h4>Order Summary</h4>
+                        <div class="summary-row">
+                            <span>Service</span>
+                            <strong id="summaryService">-</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Customer</span>
+                            <strong id="summaryName">-</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Address</span>
+                            <strong id="summaryAddress">-</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Phone</span>
+                            <strong id="summaryPhone">-</strong>
+                        </div>
+                        <div class="summary-row">
+                            <span>Email</span>
+                            <strong id="summaryEmail">-</strong>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-row summary-total">
+                            <span>Total Amount</span>
+                            <strong id="summaryAmount">₹0</strong>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-full btn-large" onclick="initiateRazorpay()"><i class="ph ph-lock-simple"></i> Pay Securely with Razorpay</button>
+                    <button class="btn btn-outline btn-full" style="margin-top:0.75rem" onclick="goBackToStep2()"><i class="ph ph-arrow-left"></i> Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModalOverlay">
+        <div class="modal-container auth-modal" id="authModal">
+            <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            
+            <!-- Login Form -->
+            <div id="loginFormContainer">
+                <div class="modal-header">
+                    <h2>Welcome Back</h2>
+                    <p>Login to your KAMWALLE account</p>
+                </div>
+                <form id="loginForm" class="modal-form">
+                    <div class="form-group">
+                        <label for="l_email">Email Address</label>
+                        <input type="email" id="l_email" required placeholder="example@mail.com" class="form-input-box">
+                    </div>
+                    <div class="form-group">
+                        <label for="l_password">Password</label>
+                        <input type="password" id="l_password" required placeholder="••••••••" class="form-input-box">
+                    </div>
+                    <div id="loginAuthError" class="auth-error hidden"></div>
+                    <button type="submit" class="btn btn-primary btn-full">Login</button>
+                    
+                    <div class="auth-divider"><span>OR</span></div>
+                    
+                    <button type="button" class="btn btn-google btn-full" onclick="window.handleGoogleLogin ? window.handleGoogleLogin() : null">
+                        <i class="ph-fill ph-google-logo"></i> Continue with Google
+                    </button>
+
+                    <p class="modal-footer-text">Don't have an account? <a href="#" onclick="switchAuthMode('register')">Register here</a></p>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerFormContainer" class="hidden">
+                <div class="modal-header">
+                    <h2>Create Account</h2>
+                    <p>Join the KAMWALLE family today</p>
+                </div>
+                <form id="registerForm" class="modal-form">
+                    <div class="form-group">
+                        <label for="r_name">Full Name</label>
+                        <input type="text" id="r_name" required placeholder="Rohan Sharma" class="form-input-box">
+                    </div>
+                    <div class="form-group">
+                        <label for="r_email">Email Address</label>
+                        <input type="email" id="r_email" required placeholder="example@mail.com" class="form-input-box">
+                    </div>
+                    <div class="form-group">
+                        <label for="r_phone">Phone Number</label>
+                        <input type="tel" id="r_phone" required placeholder="9876543210" maxlength="10" class="form-input-box">
+                    </div>
+                    <div class="form-group">
+                        <label for="r_password">Password</label>
+                        <input type="password" id="r_password" required placeholder="Min 6 characters" class="form-input-box">
+                    </div>
+                    <div id="registerAuthError" class="auth-error hidden"></div>
+                    <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+                    
+                    <div class="auth-divider"><span>OR</span></div>
+                    
+                    <button type="button" class="btn btn-google btn-full" onclick="window.handleGoogleLogin ? window.handleGoogleLogin() : null">
+                        <i class="ph-fill ph-google-logo"></i> Continue with Google
+                    </button>
+
+                    <p class="modal-footer-text">Already have an account? <a href="#" onclick="switchAuthMode('login')">Login here</a></p>
+                </form>
+            </div>
+
+            <!-- Profile View (Now handles redirection) -->
+            <div id="profileContainer" class="hidden">
+                <!-- REDIRECTION HANDLED BY NAVIGATION TO profile.html -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Razorpay SDK -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <!-- Main JavaScript -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>

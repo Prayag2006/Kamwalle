@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - KAMWALLE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="assets/kamwalle_logo.png" type="image/png">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --profile-bg: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --premium-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        body {
+            background-color: var(--profile-bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.05) 0px, transparent 50%);
+            min-height: 100vh;
+        }
+        .profile-page-container {
+            padding: 10rem 1rem 6rem 1rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .profile-content-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+            padding: 3.5rem;
+            position: relative;
+        }
+        .profile-content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--primary-gradient);
+        }
+        @media (max-width: 768px) {
+            .profile-page-container {
+                padding: 7rem 1rem 4rem 1rem;
+            }
+            .profile-content-card {
+                padding: 2rem 1.5rem;
+                border-radius: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="header" id="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="ph-fill ph-house-line"></i>
+                KAMWALLE<span>.</span>
+            </a>
+            
+            <nav class="navbar" id="navbar">
+                <ul class="nav-list">
+                    <li><a href="index.html#home" class="nav-link active">Home</a></li>
+                    <li><a href="index.html#services" class="nav-link">Our Services</a></li>
+                    <li><a href="index.html#safety" class="nav-link">Safety</a></li>
+                    <li><a href="index.html#features" class="nav-link">Why Us</a></li>
+                    <li><a href="index.html#pricing" class="nav-link">Packages</a></li>
+                    <li><a href="index.html#testimonials" class="nav-link">Reviews</a></li>
+                    <li><a href="index.html#contact" class="nav-link">Contact Us</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-actions">
+                <div id="authHeaderActions" class="auth-header-links">
+                    <button class="btn btn-outline btn-sm" id="loginBtn" onclick="location.href='index.html'">Login</button>
+                </div>
+                <div id="userProfileHeader" class="user-profile-header hidden">
+                    <div class="profile-dropdown">
+                        <button class="profile-trigger" id="profileTrigger">
+                            <i class="ph-fill ph-user-circle"></i>
+                            <span id="headerUserName">Profile</span>
+                            <i class="ph ph-caret-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="profile.html"><i class="ph ph-user"></i> My Profile</a>
+                            <a href="#" onclick="handleLogout()"><i class="ph ph-sign-out"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="headerBookBtn" onclick="location.href='index.html'">Book Now</button>
+                <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">
+                    <i class="ph ph-list"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="profile-page-container">
+        <div class="container">
+            <div class="profile-content-card">
+                <!-- Profile Content -->
+                <div id="profilePageContent">
+                    <div class="profile-modal-header">
+                        <div class="user-avatar-main">
+                            <i class="ph-fill ph-user"></i>
+                        </div>
+                        <div class="header-text">
+                            <h2 id="p_greeting">Your Profile</h2>
+                            <p>Manage your account & booking history</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Member Since</span>
+                            <span class="stat-value" id="p_since">...</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Service City</span>
+                            <span class="stat-value">Gandhinagar</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-details-grid">
+                        <div class="profile-card">
+                            <div class="card-icon"><i class="ph ph-user"></i></div>
+                            <div class="card-content">
+                                <span class="label">Full Name</span>
+                                <span class="value" id="p_name">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="profile-card">
+                            <div class="card-icon"><i class="ph ph-envelope"></i></div>
+                            <div class="card-content">
+                                <span class="label">Email Address</span>
+                                <span class="value" id="p_email">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="profile-card">
+                            <div class="card-icon"><i class="ph ph-phone"></i></div>
+                            <div class="card-content">
+                                <span class="label">Contact Number</span>
+                                <span class="value" id="p_phone">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-history-section">
+                        <div class="section-header">
+                            <h4><i class="ph ph-clock-counter-clockwise"></i> Booking History</h4>
+                            <span class="history-count" id="historyCount">0 bookings</span>
+                        </div>
+                        <div class="history-list-modern" id="userHistoryList">
+                            <div class="history-empty">Loading your history...</div>
+                        </div>
+                    </div>
+
+                    <div class="profile-actions">
+                        <button class="btn btn-logout-premium" onclick="handleLogout()">
+                            <i class="ph ph-sign-out"></i>
+                            Logout from Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span id="currentYear"></span> KAMWALLE. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase Scripts -->
+    <script type="module" src="script.js"></script>
+    <script>
+        // Check if user is logged out and redirect to home if needed
+        // This is handled by script.js but we can add a fallback here if needed.
+    </script>
+</body>
+</html>
