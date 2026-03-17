@@ -635,7 +635,7 @@ window.goBackToStep1 = function() { showStep(1); }
 window.goBackToStep2 = function() { showStep(2); }
 
 /* Razorpay Payment */
-const RAZORPAY_KEY = 'rzp_test_SQqH41QMQp0ejU'; // Integrated your Test API Key
+const RAZORPAY_KEY = 'rzp_live_SSFEW3hhRiqkfa'; // Integrated your Live API Key
 
 window.initiateRazorpay = function() {
     const serviceKey = document.getElementById('b_service').value;
