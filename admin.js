@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadContactData();
         loadBookingData();
         loadUserData();
+        window.loadReviewData();
     }
     
     // ---- Contact Requests ----
@@ -100,16 +101,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="postal-tag">PIN: ${contact.postal}</span>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-delete" onclick="window.deleteContact(${index})">
+                    <button class="btn btn-sm btn-delete" data-contact-index="${index}" type="button">
                         <i class="ph ph-trash"></i> Delete
                     </button>
                 </td>
             </tr>
         `).join('');
+        
+        // Add event delegation for contact delete buttons
+        document.querySelectorAll('#contactTableBody .btn-delete').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const index = parseInt(this.getAttribute('data-contact-index'));
+                window.deleteContact(index, this);
+            });
+        });
     }
 
-    window.deleteContact = function(index) {
+    window.deleteContact = function(index, btnElement) {
         if(confirm("Delete this contact request?")) {
+            if (btnElement) {
+                btnElement.disabled = true;
+                btnElement.innerHTML = '<i class="ph ph-spinner ph-spin"></i>...';
+            }
             const contacts = JSON.parse(localStorage.getItem('KAMWALLE_contacts')) || [];
             contacts.splice(index, 1);
             localStorage.setItem('KAMWALLE_contacts', JSON.stringify(contacts));
@@ -163,21 +177,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><span class="payment-id-tag">${b.paymentId || 'N/A'}</span></td>
                 <td><span class="status-badge status-${b.status || 'paid'}">${(b.status || 'paid').toUpperCase()}</span></td>
                 <td>
-                    <button class="btn btn-sm btn-delete" onclick="window.deleteBooking('${b.firestoreId || index}', ${!!b.firestoreId})">
+                    <button class="btn btn-sm btn-delete" data-booking-id="${String(b.firestoreId || index).replace(/"/g, '&quot;')}" data-is-firestore="${!!b.firestoreId}" type="button">
                         <i class="ph ph-trash"></i> Delete
                     </button>
                 </td>
             </tr>
         `).join('');
+        
+        // Add event delegation for booking delete buttons
+        document.querySelectorAll('#bookingsTableBody .btn-delete').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const bookingId = this.getAttribute('data-booking-id');
+                const isFirestore = this.getAttribute('data-is-firestore') === 'true';
+                window.deleteBooking(bookingId, isFirestore, this);
+            });
+        });
     }
 
-    window.deleteBooking = async function(id, isFirestore) {
+    window.deleteBooking = async function(id, isFirestore, btnElement) {
         if(confirm("Delete this booking?")) {
+            if (btnElement) {
+                btnElement.disabled = true;
+                btnElement.innerHTML = '<i class="ph ph-spinner ph-spin"></i>...';
+            }
             if (isFirestore) {
                 try {
                     await deleteDoc(doc(db, "bookings", id));
                 } catch (err) {
                     console.error("Delete from Firestore Error:", err);
+                    alert("Error: " + err.message);
                 }
             } else {
                 const bookings = JSON.parse(localStorage.getItem('KAMWALLE_bookings')) || [];
@@ -226,21 +255,218 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${u.phone || 'N/A'}</td>
                 <td><code style="font-size: 0.75rem; background: #eee; padding: 2px 4px; border-radius: 4px;">${u.uid || 'N/A'}</code></td>
                 <td>
-                    <button class="btn btn-sm btn-delete" onclick="window.deleteUser('${u.uid}')">
+                    <button class="btn btn-sm btn-delete" data-user-uid="${String(u.uid).replace(/"/g, '&quot;')}" type="button">
                         <i class="ph ph-trash"></i> Delete
                     </button>
                 </td>
             </tr>
         `).join('');
+        
+        // Add event delegation for user delete buttons
+        document.querySelectorAll('#usersTableBody .btn-delete').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const uid = this.getAttribute('data-user-uid');
+                window.deleteUser(uid, this);
+            });
+        });
+                </td>
+            </tr>
+        `).join('');
     }
 
-    window.deleteUser = async function(uid) {
+    window.deleteUser = async function(uid, btnElement) {
         if(confirm("Are you sure you want to delete this user record from the dashboard? (Note: This does not delete their account from Firebase Auth)")) {
             try {
+                if (btnElement) {
+                    btnElement.disabled = true;
+                    btnElement.innerHTML = '<i class="ph ph-spinner ph-spin"></i>...';
+                }
                 await deleteDoc(doc(db, "users", uid));
                 loadUserData();
             } catch (err) {
                 alert("Error deleting user: " + err.message);
+                loadUserData();
+            }
+        }
+    };
+
+    // ---- Admin Review Modal Logic ----
+    window.openAdminReviewModal = function() {
+        document.getElementById('adminReviewModal').classList.remove('hidden');
+    }
+    window.closeAdminReviewModal = function() {
+        document.getElementById('adminReviewModal').classList.add('hidden');
+        document.getElementById('adminReviewForm').reset();
+    }
+
+    const adminReviewForm = document.getElementById('adminReviewForm');
+    if (adminReviewForm) {
+        adminReviewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('adminRevSubmitBtn');
+            const name = document.getElementById('adminRevName').value;
+            const rating = parseInt(document.getElementById('adminRevRating').value);
+            const text = document.getElementById('adminRevText').value;
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Posting...';
+
+                await addDoc(collection(db, "reviews"), {
+                    name,
+                    rating,
+                    review: text, // Admin uses 'review' to match fallback, or we can use 'text'
+                    text: text,   // Adding both for compatibility
+                    createdAt: serverTimestamp(),
+                    verified: true,
+                    isManual: true
+                });
+
+                alert("Review added successfully to Firestore!");
+                window.closeAdminReviewModal();
+                await window.loadReviewData(true);
+            } catch (err) {
+                alert("Error adding review: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Post Review to Firestore';
+            }
+        });
+    }
+
+    // Make loadReviewData global so the button can call it
+    window.loadReviewData = async function(forceSync = false) {
+        const tbody = document.getElementById('reviewsTableBody');
+        const emptyReviews = document.getElementById('emptyReviews');
+        const tableContainer = document.getElementById('reviewsTableContainer');
+        const totalStat = document.getElementById('totalReviewStat');
+        
+        if (!tbody) return;
+
+        if (forceSync) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;"><i class="ph ph-arrows-counter-clockwise ph-spin"></i> Syncing...</td></tr>';
+        }
+
+        let firestoreReviews = [];
+        let hasFirestoreError = false;
+        
+        try {
+            const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                firestoreReviews.push({ 
+                    ...data, 
+                    firestoreId: doc.id,
+                    isFromFirestore: true
+                });
+            });
+
+            // If we successfully synced and it was a forceSync, we can clear local storage
+            // OR we can just keep it as is. Let's just keep Firestore as priority.
+        } catch (error) {
+            console.error("Firestore fetch error:", error);
+            hasFirestoreError = true;
+        }
+
+        let localReviews = JSON.parse(localStorage.getItem('KAMWALLE_reviews')) || [];
+        
+        // Intelligent Merging:
+        // Only show local reviews that don't appear to be in Firestore already
+        const firestoreCheckSet = new Set(firestoreReviews.map(r => `${r.name}_${r.rating}_${(r.review || r.text || "").substring(0,20)}`));
+        
+        const uniqueLocalReviews = localReviews.filter((lr, idx) => {
+            const key = `${lr.name}_${lr.rating}_${(lr.review || lr.text || "").substring(0,20)}`;
+            return !firestoreCheckSet.has(key);
+        });
+
+        const allReviews = [
+            ...firestoreReviews,
+            ...uniqueLocalReviews.map((r, idx) => ({ ...r, localId: idx, isFromFirestore: false }))
+        ];
+
+        if (totalStat) totalStat.textContent = allReviews.length;
+
+        if (allReviews.length === 0) {
+            tbody.innerHTML = '';
+            tableContainer.style.display = 'none';
+            emptyReviews.classList.remove('hidden');
+            return;
+        }
+
+        emptyReviews.classList.add('hidden');
+        tableContainer.style.display = 'block';
+
+        tbody.innerHTML = allReviews.map((r, index) => {
+            const dateObj = r.createdAt ? (r.createdAt.seconds ? new Date(r.createdAt.seconds * 1000) : new Date(r.createdAt)) : new Date();
+            const dateStr = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            const idToPass = r.firestoreId || r.localId;
+            const isFS = !!r.isFromFirestore;
+
+            return `
+                <tr class="${!isFS ? 'local-row' : ''}" style="${!isFS ? 'background: #fffcf0;' : ''}">
+                    <td class="td-date">${dateStr} ${!isFS ? '<span class="badge-local" style="font-size: 0.7rem; background: #fee2e2; color: #b91c1c; padding: 1px 4px; border-radius: 4px; margin-left: 5px;">Local Only</span>' : ''}</td>
+                    <td class="td-name"><strong>${r.name}</strong> ${isFS ? '<i class="ph-fill ph-check-circle" style="color: #16a34a; font-size: 0.8rem;" title="Synced with Database"></i>' : ''}</td>
+                    <td>
+                        <div style="color: #ffc107;">
+                            ${'★'.repeat(r.rating || 0)}${'☆'.repeat(5 - (r.rating || 0))}
+                        </div>
+                    </td>
+                    <td style="max-width: 300px; font-size: 0.9rem;">${r.review || r.text || 'N/A'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-delete" data-review-id="${String(idToPass).replace(/"/g, '&quot;')}" data-is-firestore="${isFS}" type="button">
+                            <i class="ph ph-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+        // Add event delegation for delete buttons
+        document.querySelectorAll('#reviewsTableBody .btn-delete').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const reviewId = this.getAttribute('data-review-id');
+                const isFirestore = this.getAttribute('data-is-firestore') === 'true';
+                window.deleteReview(reviewId, isFirestore, this);
+            });
+        });
+    };
+
+    window.deleteReview = async function(id, isFirestore, btnElement) {
+        if (id === undefined || id === null || id === "") return;
+        
+        const confirmDelete = confirm("Are you sure you want to delete this customer review?");
+        if (!confirmDelete) return;
+
+        try {
+            if (btnElement) {
+                btnElement.disabled = true;
+                btnElement.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Deleting...';
+            }
+
+            if (isFirestore) {
+                console.log("Deleting from Firestore:", id);
+                await deleteDoc(doc(db, "reviews", id));
+            } else {
+                console.log("Deleting from localStorage:", id);
+                let reviews = JSON.parse(localStorage.getItem('KAMWALLE_reviews')) || [];
+                const idx = parseInt(id);
+                if (!isNaN(idx)) {
+                    reviews.splice(idx, 1);
+                    localStorage.setItem('KAMWALLE_reviews', JSON.stringify(reviews));
+                }
+            }
+            
+            await window.loadReviewData();
+            console.log("Deleted successfully");
+        } catch (err) {
+            console.error("Delete Error:", err);
+            alert("Error: " + err.message);
+            if (btnElement) {
+                btnElement.disabled = false;
+                btnElement.innerHTML = '<i class="ph ph-trash"></i> Delete';
             }
         }
     };
@@ -258,10 +484,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (tab === 'contacts') buttons[0].classList.add('active');
         else if (tab === 'bookings') buttons[1].classList.add('active');
         else if (tab === 'users') buttons[2].classList.add('active');
+        else if (tab === 'reviews') buttons[3].classList.add('active');
         
         // Refresh data when switching
         if (tab === 'contacts') loadContactData();
         if (tab === 'bookings') loadBookingData();
         if (tab === 'users') loadUserData();
+        if (tab === 'reviews') window.loadReviewData();
     }
 });

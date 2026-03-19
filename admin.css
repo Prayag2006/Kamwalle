@@ -82,6 +82,24 @@ h1, h2, h3, h4 {
 .btn-full { width: 100%; display: flex; }
 .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
 
+.btn-sync {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+    transition: all 0.3s ease;
+}
+
+.btn-sync:hover {
+    background: #16a34a;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-sync:active {
+    transform: translateY(0);
+}
+
 /* =======================================================
    Login Screen
    ======================================================= */
@@ -378,7 +396,14 @@ h1, h2, h3, h4 {
     color: #8b5cf6;
 }
 
-/* Tabs */
+/* Tabs & Tab Headers */
+.tab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
 .admin-tabs {
     display: flex;
     gap: 0.5rem;

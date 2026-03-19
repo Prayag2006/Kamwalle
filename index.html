@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kamwalle | Premium Home Services & Cleaning in Gandhinagar</title>
-    <meta name="description" content="Kamwalle provides premium, verified home services in Gandhinagar and Ahmedabad. Book professional deep cleaning, cooking, maid services, and pest control. Trusted by thousands.">
-    <meta name="keywords" content="Home Services Gandhinagar, Cleaning Services Gandhinagar, Verified Maid Gandhinagar, Cook for Home Gandhinagar, Pest Control Gandhinagar, Kamwalle, Domestic Help Gujarat">
+    <title>Kamwalle | Maid Service Near Me Gandhinagar & Ahmedabad | House Cleaning</title>
+    <meta name="description" content="Looking for a maid service near me? Kamwalle offers verified full-time & part-time maids, house cleaning, and cooking services in Gandhinagar & Ahmedabad. Trusted, professional domestic help for your home.">
+    <meta name="keywords" content="maid service near me, house cleaning near me, full-time maid Gandhinagar, part-time maid Ahmedabad, jhadu pocha services, verified housemaid, cooking services, deep cleaning, domestic help near me, Sargasan, Kudasan, Info City, Raysan, PDPU Road, Kaba, Randheja">
     <link rel="canonical" href="https://kamwalle.in/">
     
     <!-- Open Graph / Facebook -->
@@ -47,10 +47,10 @@
       "telephone": "+919876543210",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Gandhinagar",
+        "streetAddress": "Sargasan, Kudasan",
         "addressLocality": "Gandhinagar",
         "addressRegion": "GJ",
-        "postalCode": "382010",
+        "postalCode": "382421",
         "addressCountry": "IN"
       },
       "geo": {
@@ -58,6 +58,7 @@
         "latitude": 23.2156,
         "longitude": 72.6369
       },
+      "priceRange": "₹",
       "openingHoursSpecification": {
         "@type": "OpeningHoursSpecification",
         "dayOfWeek": [
@@ -72,15 +73,41 @@
         "opens": "00:00",
         "closes": "23:59"
       },
-      "sameAs": [
-        "https://www.facebook.com/profile.php?id=61580734109406",
-        "https://www.instagram.com/kamwalleforyou/?hl=en"
-      ],
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
         "name": "Home Services",
         "itemListElement": [
           {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Full-Time Maid Services",
+              "description": "Verified 24x7 full-time domestic help for home cleaning and maintenance."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Part-Time Maid & Cleaning",
+              "description": "Daily house cleaning, dusting, and jhadu-pocha services near you."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Professional Cooking Services",
+              "description": "Hire expert home cooks for delicious, hygienic daily meals."
+            }
+          }
+        ]
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "1250"
+      },
             "@type": "Offer",
             "itemOffered": {
               "@type": "Service",
@@ -192,8 +219,8 @@
         <div class="container hero-container">
             <div class="hero-content">
                 <span class="badge">#1 Trusted Home Services</span>
-                <h1 class="hero-title">Verified Premium Home Services in Gandhinagar.</h1>
-                <p class="hero-description">KAMWALLE connects you with verified professionals for deep cleaning, cooking, and maid services across Gujarat.</p>
+                <h1 class="hero-title">Verified Maid Service Near Me in Gandhinagar & Ahmedabad.</h1>
+                <p class="hero-description">Premium domestic help and house cleaning near you. We provide verified full-time maids, part-time cleaning, and professional cooks across Gujarat.</p>
                 <div class="hero-buttons">
                     <a href="#services" class="btn btn-primary btn-large">Explore Services <i class="ph ph-arrow-right"></i></a>
                     <div class="rating-badge">
@@ -211,7 +238,7 @@
             
             <div class="hero-image-wrapper">
                 <div class="image-ornament"></div>
-                <img src="assets/hero_image_kamwala_1773064866580.png" alt="AC Repair and Home Cleaning Service in Gandhinagar" class="hero-image" loading="eager">
+                <img src="assets/hero_image_kamwala_1773064866580.png" alt="Best Maid Service Near Me in Gandhinagar and House Cleaning Ahmedabad" class="hero-image" loading="eager">
                 
                 <!-- Floating Info Card -->
                 <div class="floating-card popup-card-1">
@@ -388,7 +415,7 @@
             
             <div class="trust-content">
                 <span class="sub-title">100% Quality Assurance</span>
-                <h2 class="section-title">Body-Cam Monitored & Fully Protected</h2>
+                <h2 class="section-title">Verified Maid Service Near Me & House Cleaning</h2>
                 <p class="section-para">Your safety and our service quality are our highest priorities. Every KAMWALLE professional arrives fully equipped with specialized premium gear to maintain utmost hygiene and absolute transparency.</p>
                 
                 <ul class="trust-list">
@@ -472,9 +499,14 @@
                 <span class="sub-title">Client Stories</span>
                 <h2 class="section-title">Loved by Thousands</h2>
                 <p class="section-para">See what our satisfied customers have to say about our premium professional services.</p>
+                <div class="reviews-action">
+                    <button class="btn btn-outline" onclick="openReviewModal()">
+                        <i class="ph ph-pencil-line"></i> Write a Review
+                    </button>
+                </div>
             </div>
             
-            <div class="testimonials-grid">
+            <div class="testimonials-grid" id="reviews-container">
                 <div class="testimo-card">
                     <div class="stars">
                         <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
@@ -749,6 +781,18 @@
                 </div>
                 
                 <div class="footer-col">
+                    <h4>Areas We Serve</h4>
+                    <ul class="serve-list">
+                        <li>Sargasan, Gandhinagar</li>
+                        <li>Kudasan, Gandhinagar</li>
+                        <li>Info City, Gandhinagar</li>
+                        <li>Raysan &amp; PDPU Road</li>
+                        <li>Kaba &amp; Randheja</li>
+                        <li>Chandkheda, Ahmedabad</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
                     <h4>Contact Us</h4>
                     <ul class="contact-info">
                         <li><i class="ph ph-phone"></i> +91 98765 43210</li>
@@ -768,6 +812,37 @@
             </div>
         </div>
     </footer>
+
+    <!-- Review Modal -->
+    <div class="modal-overlay" id="reviewModalOverlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Submit Your Review</h3>
+                <button class="modal-close" onclick="closeReviewModal()"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="reviewForm" class="modal-form">
+                <div class="form-group">
+                    <label for="rev_name">Your Name</label>
+                    <input type="text" id="rev_name" required placeholder="E.g. Ananya Mehta" class="form-input-box">
+                </div>
+                <div class="form-group">
+                    <label>Rating</label>
+                    <div class="star-rating-input">
+                        <input type="radio" id="star5" name="rating" value="5" checked><label for="star5"><i class="ph-fill ph-star"></i></label>
+                        <input type="radio" id="star4" name="rating" value="4"><label for="star4"><i class="ph-fill ph-star"></i></label>
+                        <input type="radio" id="star3" name="rating" value="3"><label for="star3"><i class="ph-fill ph-star"></i></label>
+                        <input type="radio" id="star2" name="rating" value="2"><label for="star2"><i class="ph-fill ph-star"></i></label>
+                        <input type="radio" id="star1" name="rating" value="1"><label for="star1"><i class="ph-fill ph-star"></i></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="rev_text">Your Review</label>
+                    <textarea id="rev_text" required rows="4" placeholder="Tell us about your experience..." class="form-input-box"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" id="reviewSubmitBtn">Submit Review</button>
+            </form>
+        </div>
+    </div>
 
     <!-- Booking Modal -->
     <div class="booking-modal-overlay" id="bookingModalOverlay">

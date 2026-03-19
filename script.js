@@ -23,7 +23,10 @@ import {
     query,
     where,
     getDocs,
-    orderBy
+    orderBy,
+    addDoc,
+    onSnapshot,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 
@@ -102,6 +105,28 @@ window.openAuthModal = function(mode = 'login') {
 
 window.closeAuthModal = function() {
     const modal = document.getElementById('authModalOverlay');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+};
+
+// --- REVIEW MODAL FUNCTIONS ---
+window.openReviewModal = function() {
+    const modal = document.getElementById('reviewModalOverlay');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Auto-fill name if logged in
+        if (auth.currentUser && document.getElementById('rev_name')) {
+            document.getElementById('rev_name').value = auth.currentUser.displayName || '';
+        }
+    }
+};
+
+window.closeReviewModal = function() {
+    const modal = document.getElementById('reviewModalOverlay');
     if (modal) {
         modal.classList.remove('active');
         document.body.style.overflow = '';
@@ -399,7 +424,118 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
+
+    // 10. Review Form Handler
+    const reviewForm = document.getElementById('reviewForm');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', handleReviewSubmit);
+    }
+
+    // 11. Load Reviews
+    loadReviews();
 });
+
+/* =======================================================
+   Review Feature Logic
+   ======================================================= */
+async function handleReviewSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('reviewSubmitBtn');
+    const name = document.getElementById('rev_name').value.trim();
+    const rating = parseInt(document.querySelector('input[name="rating"]:checked').value);
+    const text = document.getElementById('rev_text').value.trim();
+
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Submitting...';
+
+    try {
+        const reviewData = {
+            name: name,
+            rating: rating,
+            text: text,
+            createdAt: serverTimestamp(),
+            verified: true // Defaulted to true for simplicity or add logic later
+        };
+
+        await addDoc(collection(db, "reviews"), reviewData);
+        
+        // Also save to localStorage for offline/fallback
+        const existingReviews = JSON.parse(localStorage.getItem('KAMWALLE_reviews')) || [];
+        existingReviews.push({
+            name: name,
+            rating: rating,
+            review: text,
+            createdAt: new Date().toISOString(),
+            verified: true
+        });
+        localStorage.setItem('KAMWALLE_reviews', JSON.stringify(existingReviews));
+        
+        alert("Thank you for your review!");
+        closeReviewModal();
+        document.getElementById('reviewForm').reset();
+    } catch (error) {
+        console.error("Error submitting review:", error);
+        alert("Failed to submit review. Please try again.");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+}
+
+function loadReviews() {
+    const container = document.getElementById('reviews-container');
+    if (!container) return;
+
+    const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+    
+    onSnapshot(q, (snapshot) => {
+        // Keep initial static ones if desired, or clear and replace
+        // For now, let's clear and replace to be consistent
+        container.innerHTML = '';
+        
+        if (snapshot.empty) {
+            // Show some default ones if empty? 
+            // Or just leave it. Let's add a message if empty.
+            container.innerHTML = '<p class="section-para" style="grid-column: 1/-1; text-align: center;">No reviews yet. Be the first to review!</p>';
+            return;
+        }
+
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const card = createReviewCard(data);
+            container.appendChild(card);
+        });
+    });
+}
+
+function createReviewCard(data) {
+    const card = document.createElement('div');
+    card.className = 'testimo-card';
+    
+    // Create stars HTML
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= data.rating) {
+            starsHtml += '<i class="ph-fill ph-star"></i>';
+        } else {
+            starsHtml += '<i class="ph ph-star"></i>';
+        }
+    }
+
+    card.innerHTML = `
+        <div class="stars">${starsHtml}</div>
+        <p class="testimo-text">"${data.text}"</p>
+        <div class="testimo-author">
+            <div class="author-avatar">${data.name.charAt(0).toUpperCase()}</div>
+            <div class="author-info">
+                <h4>${data.name}</h4>
+                <span>Verified Customer</span>
+            </div>
+        </div>
+    `;
+    return card;
+}
 
 /* =======================================================
    Booking Modal Logic
