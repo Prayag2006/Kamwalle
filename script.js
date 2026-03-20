@@ -58,12 +58,57 @@ try {
 console.log("Firebase App initialized for project:", firebaseConfig.projectId);
 
 // --- GLOBAL FUNCTIONS (Assigned early for HTML access) ---
+window.showHomeStatus = function(title, message, type = 'success') {
+    const overlay = document.getElementById('homeStatusModalOverlay');
+    const titleEl = document.getElementById('homeStatusTitle');
+    const msgEl = document.getElementById('homeStatusMessage');
+    const iconBox = document.getElementById('homeStatusIcon');
+    
+    if (!overlay || !titleEl || !msgEl || !iconBox) return;
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    
+    // Set icon based on type
+    let iconClass = 'ph-check-circle';
+    let iconColor = '#10b981'; // success
+    
+    if (type === 'error') {
+        iconClass = 'ph-x-circle';
+        iconColor = '#ef4444';
+    } else if (type === 'info') {
+        iconClass = 'ph-info';
+        iconColor = '#0f62fe';
+    } else if (type === 'warning') {
+        iconClass = 'ph-warning-circle';
+        iconColor = '#f1c40f';
+    }
+    
+    iconBox.innerHTML = `<i class="ph-fill ${iconClass}"></i>`;
+    iconBox.style.color = iconColor;
+    
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+};
+
+window.closeHomeStatus = function() {
+    const overlay = document.getElementById('homeStatusModalOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+};
+
 window.handleLogout = async function() {
     console.log("Logout triggered");
+    // Using a custom confirm is more complex because it's async, 
+    // but for now let's just use the status modal for the success message.
+    // I'll keep the browser confirm for now as it's a safety check, 
+    // but I'll replace the alert.
     if (confirm("Are you sure you want to logout?")) {
         try {
             await signOut(auth);
-            alert("Logged out successfully!");
+            showHomeStatus("Logged Out", "You have been logged out successfully.", "info");
             if (window.closeAuthModal) window.closeAuthModal();
         } catch (error) {
             console.error("Logout error:", error);
@@ -78,7 +123,7 @@ window.handleGoogleLogin = async function() {
     try {
         const result = await signInWithPopup(auth, provider);
         await saveUserToFirestore(result.user);
-        alert("Signed in with Google successfully!");
+        showHomeStatus("Welcome!", "Signed in with Google successfully!", "success");
         if (window.closeAuthModal) window.closeAuthModal();
     } catch (error) {
         console.error("Google Login Error:", error);
@@ -471,12 +516,12 @@ async function handleReviewSubmit(e) {
         });
         localStorage.setItem('KAMWALLE_reviews', JSON.stringify(existingReviews));
         
-        alert("Thank you for your review!");
+        showHomeStatus("Thank You!", "Thank you for your review! It has been submitted successfully.", "success");
         closeReviewModal();
         document.getElementById('reviewForm').reset();
     } catch (error) {
         console.error("Error submitting review:", error);
-        alert("Failed to submit review. Please try again.");
+        showHomeStatus("Submission Failed", "Failed to submit review. Please try again.", "error");
     } finally {
         btn.disabled = false;
         btn.innerHTML = originalText;
@@ -541,6 +586,7 @@ function createReviewCard(data) {
    Booking Modal Logic
    ======================================================= */
 const servicePrices = {
+    advance: { name: 'Advance Booking', price: 100 },
     cleaning: { name: 'Deep Home Cleaning', price: 499 },
     cooking: { name: 'Cooking Service', price: 599 },
     maid: { name: 'Maid / Domestic Help', price: 399 },
@@ -634,15 +680,15 @@ window.goToStep2 = function() {
     const service = document.getElementById('b_service').value;
 
     if (!name || !flat || !street || !city || !pin || !phone || !service) {
-        alert('Please fill in all required fields.');
+        showHomeStatus("Missing Info", "Please fill in all required fields to proceed.", "warning");
         return;
     }
     if (pin.length !== 6 || isNaN(pin)) {
-        alert('Please enter a valid 6-digit pincode.');
+        showHomeStatus("Invalid Pincode", "Please enter a valid 6-digit pincode.", "warning");
         return;
     }
     if (phone.length !== 10 || isNaN(phone)) {
-        alert('Please enter a valid 10-digit phone number.');
+        showHomeStatus("Invalid Phone", "Please enter a valid 10-digit phone number.", "warning");
         return;
     }
 
@@ -665,7 +711,7 @@ window.goToStep2 = function() {
 window.sendOTP = async function() {
     const email = document.getElementById('b_email').value.trim();
     if (!email || !email.includes('@') || !email.includes('.')) {
-        alert('Please enter a valid email address.');
+        showHomeStatus("Invalid Email", "Please enter a valid email address.", "warning");
         return;
     }
 
@@ -699,10 +745,10 @@ window.sendOTP = async function() {
 
         document.getElementById('otpSection').classList.remove('hidden');
         sendBtn.innerHTML = 'Link Sent ✓ Check Email';
-        alert('Magic login link sent to: ' + email + '\n\nPlease click the link in your email to continue your booking on this device.');
+        showHomeStatus("Link Sent!", "Magic login link sent to: " + email + "\n\nPlease check your email to continue.", "success");
     } catch (error) {
         console.error('Firebase Auth Error:', error);
-        alert('Error sending login link: ' + error.message);
+        showHomeStatus("Error", "Error sending login link: " + error.message, "error");
         sendBtn.innerHTML = 'Send Magic Login Link <i class="ph ph-paper-plane-tilt"></i>';
         sendBtn.disabled = false;
     }
@@ -750,7 +796,7 @@ async function handleIncomingLink() {
             window.history.replaceState({}, document.title, window.location.pathname);
         } catch (error) {
             console.error('Magic Link Error:', error);
-            alert('Your login link has expired or is invalid. Please try again.');
+            showHomeStatus("Link Expired", "Your login link has expired or is invalid. Please try again.", "error");
         }
     }
 }
@@ -828,12 +874,12 @@ window.initiateRazorpay = function() {
         const rzp = new Razorpay(options);
         rzp.on('payment.failed', function(response) {
             console.error("Razorpay Payment Failed:", response.error);
-            alert('Payment failed. Please try again.\nReason: ' + response.error.description);
+            showHomeStatus("Payment Failed", "Reason: " + response.error.description, "error");
         });
         rzp.open();
     } catch (e) {
         console.error("Razorpay initialization error:", e);
-        alert('Could not load Razorpay. Please check your internet connection or Key ID.');
+        showHomeStatus("Payment Error", "Could not load Razorpay. Please check your connection.", "error");
     }
 }
 
@@ -869,11 +915,10 @@ async function handlePaymentSuccess(response, serviceInfo, name, phone, email) {
         }
     }
 
-    alert(
-        (response.isMock ? '[TEST MODE] ' : '') + 
-        'Payment Successful! 🎉\n\n' +
-        'Payment ID: ' + response.razorpay_payment_id + '\n\n' +
-        'Your ' + serviceInfo.name + ' booking is confirmed. Our team will contact you shortly.'
+    showHomeStatus(
+        response.isMock ? "Test Success!" : "Success!", 
+        "Your " + serviceInfo.name + " booking is confirmed. Our team will contact you shortly.", 
+        "success"
     );
     closeBookingModal();
 }
@@ -933,7 +978,7 @@ async function handleRegister(e) {
         });
         
         console.log("Manual registration successful for UID:", user.uid);
-        alert("Success! Your KAMWALLE account has been created.");
+        showHomeStatus("Welcome!", "Your KAMWALLE account has been created successfully.", "success");
         closeAuthModal();
         
         // Form reset handled as modal closes or via manual reset if needed
@@ -944,7 +989,7 @@ async function handleRegister(e) {
             errorEl.innerHTML = `<i class="ph ph-warning-circle"></i> ${error.message}`;
             errorEl.classList.remove('hidden');
         } else {
-            alert("Registration failed: " + error.message);
+            showHomeStatus("Registration Failed", error.message, "error");
         }
     } finally {
         if (btn) {
@@ -1000,7 +1045,7 @@ async function handleLogin(e) {
             errorEl.innerHTML = `<i class="ph ph-warning-circle"></i> ${userMsg}`;
             errorEl.classList.remove('hidden');
         } else {
-            alert("Login failed: " + userMsg);
+            showHomeStatus("Login Failed", userMsg, "error");
         }
     } finally {
         if (btn) {

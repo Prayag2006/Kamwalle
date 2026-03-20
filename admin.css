@@ -6,25 +6,25 @@
     --primary-dark: #0043ce;
     --primary-light: #4589ff;
     --primary-alpha: rgba(15, 98, 254, 0.1);
-    
+
     --secondary: #001d6c;
     --accent: #ff832b;
-    
+
     --bg-body: #f4f4f4;
     --bg-surface: #ffffff;
-    
+
     --text-main: #161616;
     --text-muted: #525252;
     --text-light: #f4f4f4;
-    
+
     --border: #e0e0e0;
-    
+
     --font-heading: 'Outfit', sans-serif;
     --font-body: 'Plus Jakarta Sans', sans-serif;
-    
+
     --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
-    
+
     --border-radius: 8px;
     --border-radius-lg: 16px;
 }
@@ -42,11 +42,16 @@ body {
     line-height: 1.5;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
     font-family: var(--font-heading);
 }
 
-.hidden { display: none !important; }
+.hidden {
+    display: none !important;
+}
 
 /* =======================================================
    Buttons & Inputs
@@ -70,17 +75,30 @@ h1, h2, h3, h4 {
     background-color: var(--primary);
     color: #fff;
 }
-.btn-primary:hover { background-color: var(--primary-dark); }
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+}
 
 .btn-outline {
     background: transparent;
     color: var(--primary);
     border: 1px solid var(--primary);
 }
-.btn-outline:hover { background: var(--primary-alpha); }
 
-.btn-full { width: 100%; display: flex; }
-.btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+.btn-outline:hover {
+    background: var(--primary-alpha);
+}
+
+.btn-full {
+    width: 100%;
+    display: flex;
+}
+
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
 
 .btn-sync {
     background: #f0fdf4;
@@ -210,8 +228,15 @@ h1, h2, h3, h4 {
     color: var(--secondary);
     text-decoration: none;
 }
-.logo span { color: var(--primary); }
-.logo i { color: var(--primary); font-size: 1.8rem; }
+
+.logo span {
+    color: var(--primary);
+}
+
+.logo i {
+    color: var(--primary);
+    font-size: 1.8rem;
+}
 
 .admin-main {
     max-width: 1200px;
@@ -231,6 +256,7 @@ h1, h2, h3, h4 {
     color: var(--text-main);
     margin-bottom: 0.25rem;
 }
+
 .page-title p {
     color: var(--text-muted);
 }
@@ -314,9 +340,21 @@ h1, h2, h3, h4 {
     background: #f9fafb;
 }
 
-.td-date { color: var(--text-muted); font-size: 0.9rem; white-space: nowrap; }
-.td-name { font-size: 1.1rem; color: var(--secondary); }
-.td-contact { color: var(--text-muted); font-size: 0.95rem; }
+.td-date {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.td-name {
+    font-size: 1.1rem;
+    color: var(--secondary);
+}
+
+.td-contact {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
 
 .postal-tag {
     display: inline-block;
@@ -374,10 +412,22 @@ h1, h2, h3, h4 {
 }
 
 @media (max-width: 800px) {
-    .admin-top { flex-direction: column; gap: 2rem; }
-    .stat-card { width: 100%; }
-    .stat-cards { flex-direction: column; }
-    .admin-tabs { flex-direction: column; }
+    .admin-top {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .stat-card {
+        width: 100%;
+    }
+
+    .stat-cards {
+        flex-direction: column;
+    }
+
+    .admin-tabs {
+        flex-direction: column;
+    }
 }
 
 /* Stat Cards Row */
@@ -476,4 +526,116 @@ h1, h2, h3, h4 {
     background: #fffbeb;
     color: #d97706;
     border: 1px solid #fde68a;
+}
+
+/* =======================================================
+   Custom Modals (Success/Confirm/Alert)
+   ======================================================= */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: var(--bg-surface);
+    width: 90%;
+    max-width: 450px;
+    padding: 2.5rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    position: relative;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-content--alert {
+    padding: 3rem 2rem;
+}
+
+.modal:not(.hidden) .modal-content {
+    transform: translateY(0);
+}
+
+.modal-icon {
+    width: 70px;
+    height: 70px;
+    background: var(--primary-alpha);
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 1.5rem;
+}
+
+.modal-body h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--secondary);
+}
+
+.modal-body p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.modal-footer button {
+    min-width: 120px;
+}
+
+/* Modals with Headers (e.g. Add Review) */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-btn:hover {
+    color: var(--primary);
 }
