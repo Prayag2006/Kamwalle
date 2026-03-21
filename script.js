@@ -1114,14 +1114,12 @@ window.handleForgotPassword = async function(e) {
             showHomeStatus("Reset Link Sent", "Please check your email for the newly designed reset link.", "success");
         } catch (error) {
             console.error("Password reset error:", error);
-            // Fallback natively if API setup fails or errors
-            if (error.message.includes('Server configuration error')) {
-                console.warn('Vercel API failed, falling back to standard Firebase...');
-                await sendPasswordResetEmail(auth, email);
-                showHomeStatus("Reset Link Sent", "Used standard fallback. Please check email.", "success");
-                return;
+            // Normal error handling
+            let friendlyMsg = error.message;
+            if (friendlyMsg.includes('INTERNAL ASSERT FAILED') || friendlyMsg.includes('user-not-found') || friendlyMsg.includes('RECORD_NOT_FOUND')) {
+                friendlyMsg = "Account not found! Please create an account first.";
             }
-            alert("Error sending reset link: " + error.message);
+            showHomeStatus("Reset Failed", friendlyMsg, "error");
         } finally {
             if (resetBtn) {
                 resetBtn.disabled = false;

@@ -21,7 +21,11 @@ export default async function handler(req, res) {
                 return res.status(500).json({ error: 'Server configuration error: Missing Firebase Credentials.' });
             }
             try {
-                const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+                let envString = process.env.FIREBASE_SERVICE_ACCOUNT.trim();
+                if ((envString.startsWith("'") && envString.endsWith("'")) || (envString.startsWith('"') && envString.endsWith('"'))) {
+                    envString = envString.slice(1, -1);
+                }
+                const serviceAccount = JSON.parse(envString);
                 // Fix for dotenv escaping newlines in private key
                 if (serviceAccount.private_key) {
                     serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
