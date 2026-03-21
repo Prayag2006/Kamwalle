@@ -998,76 +998,116 @@
 
     <!-- Auth Modal -->
     <div class="modal-overlay" id="authModalOverlay">
-        <div class="modal-container auth-modal" id="authModal">
+        <div class="modal-container auth-modal-premium" id="authModal">
             <button class="modal-close" onclick="closeAuthModal()">&times;</button>
             
-            <!-- Login Form -->
-            <div id="loginFormContainer">
-                <div class="modal-header">
-                    <h2>Welcome Back</h2>
-                    <p>Login to your KAMWALLE account</p>
+            <div class="auth-layout">
+                <!-- Side Panel (Desktop only) -->
+                <div class="auth-side-panel">
+                    <div class="side-panel-content">
+                        <div class="side-logo">
+                            <i class="ph-fill ph-house-line"></i>
+                            <span>KAMWALLE</span>
+                        </div>
+                        <h3>Join our community of 10,000+ happy homes.</h3>
+                        <ul class="benefit-list">
+                            <li><i class="ph-fill ph-check-circle"></i> Verified Professionals</li>
+                            <li><i class="ph-fill ph-check-circle"></i> Secure Payments</li>
+                            <li><i class="ph-fill ph-check-circle"></i> 24/7 Support</li>
+                        </ul>
+                    </div>
                 </div>
-                <form id="loginForm" class="modal-form">
-                    <div class="form-group">
-                        <label for="l_email">Email Address</label>
-                        <input type="email" id="l_email" required placeholder="example@mail.com" class="form-input-box">
-                    </div>
-                    <div class="form-group">
-                        <label for="l_password">Password</label>
-                        <input type="password" id="l_password" required placeholder="••••••••" class="form-input-box">
-                    </div>
-                    <div id="loginAuthError" class="auth-error hidden"></div>
-                    <button type="submit" class="btn btn-primary btn-full">Login</button>
-                    
-                    <div class="auth-divider"><span>OR</span></div>
-                    
-                    <button type="button" class="btn btn-google btn-full" onclick="window.handleGoogleLogin ? window.handleGoogleLogin() : null">
-                        <i class="ph-fill ph-google-logo"></i> Continue with Google
-                    </button>
 
-                    <p class="modal-footer-text">Don't have an account? <a href="#" onclick="switchAuthMode('register')">Register here</a></p>
-                </form>
-            </div>
+                <!-- Auth Forms -->
+                <div class="auth-forms-container">
+                    <!-- Login Form -->
+                    <div id="loginFormContainer">
+                        <div class="modal-header">
+                            <h2>Welcome Back</h2>
+                        </div>
+                        <form id="loginForm" class="modal-form">
+                            <div class="form-group">
+                                <label for="l_email">Email Address</label>
+                                <div class="input-with-icon">
+                                    <i class="ph ph-envelope-simple"></i>
+                                    <input type="email" id="l_email" required placeholder="example@mail.com" class="form-input-box">
+                                </div>
+                            </div>
+                                <div class="form-group">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                        <label for="l_password" style="margin-bottom: 0;">Password</label>
+                                        <a href="#" class="forgot-link" onclick="handleForgotPassword(event)">Forgot Password?</a>
+                                    </div>
+                                    <div class="input-with-icon">
+                                        <i class="ph ph-lock-key"></i>
+                                        <input type="password" id="l_password" required placeholder="Min 6 chars + Upper + Symbol" class="form-input-box">
+                                    </div>
+                                </div>
+                            <div id="loginAuthError" class="auth-error hidden"></div>
+                            <button type="submit" class="btn btn-primary btn-full">Login now</button>
+                            
+                            <button type="button" class="btn btn-google-premium" onclick="window.handleGoogleLogin ? window.handleGoogleLogin() : null">
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                                <span>Google Account</span>
+                            </button>
+                            
+                            <div class="modal-footer">
+                                <p class="modal-footer-text">New to KAMWALLE? <a href="#" onclick="switchAuthMode('register')">Create an account</a></p>
+                            </div>
+                        </form>
+                    </div>
+        
+                    <!-- Register Form -->
+                    <div id="registerFormContainer" class="hidden">
+                        <div class="modal-header">
+                            <h2>Create Account</h2>
+                        </div>
+                        <form id="registerForm" class="modal-form">
+                            <div class="auth-grid">
+                                <div class="form-group">
+                                    <label for="r_name">Full Name</label>
+                                    <div class="input-with-icon">
+                                        <i class="ph ph-user"></i>
+                                        <input type="text" id="r_name" required placeholder="Name" class="form-input-box">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="r_email">Email Address</label>
+                                    <div class="input-with-icon">
+                                        <i class="ph ph-envelope-simple"></i>
+                                        <input type="email" id="r_email" required placeholder="Email" class="form-input-box">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="r_phone">Phone Number</label>
+                                    <div class="input-with-icon">
+                                        <i class="ph ph-phone"></i>
+                                        <input type="tel" id="r_phone" required placeholder="Phone" maxlength="10" class="form-input-box">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="r_password">Password</label>
+                                    <div class="input-with-icon">
+                                        <i class="ph ph-lock-key"></i>
+                                        <input type="password" id="r_password" required placeholder="Example: Kam@123" class="form-input-box">
+                                    </div>
+                                    <span class="input-tip">Include 1 uppercase & 1 symbol (@#$!)</span>
+                                </div>
+                            </div>
+                            <div id="registerAuthError" class="auth-error hidden"></div>
+                            <button type="submit" class="btn btn-primary btn-full">Create Account</button>
 
-            <!-- Register Form -->
-            <div id="registerFormContainer" class="hidden">
-                <div class="modal-header">
-                    <h2>Create Account</h2>
-                    <p>Join the KAMWALLE family today</p>
+                            <button type="button" class="btn btn-google-premium" onclick="window.handleGoogleLogin ? window.handleGoogleLogin() : null">
+                                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                                <span>Google Account</span>
+                            </button>
+                            
+                            <div class="modal-footer">
+                                <p class="modal-footer-text">Already have an account? <a href="#" onclick="switchAuthMode('login')">Sign in here</a></p>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <form id="registerForm" class="modal-form">
-                    <div class="form-group">
-                        <label for="r_name">Full Name</label>
-                        <input type="text" id="r_name" required placeholder="Rohan Sharma" class="form-input-box">
-                    </div>
-                    <div class="form-group">
-                        <label for="r_email">Email Address</label>
-                        <input type="email" id="r_email" required placeholder="example@mail.com" class="form-input-box">
-                    </div>
-                    <div class="form-group">
-                        <label for="r_phone">Phone Number</label>
-                        <input type="tel" id="r_phone" required placeholder="9876543210" maxlength="10" class="form-input-box">
-                    </div>
-                    <div class="form-group">
-                        <label for="r_password">Password</label>
-                        <input type="password" id="r_password" required placeholder="Min 6 characters" class="form-input-box">
-                    </div>
-                    <div id="registerAuthError" class="auth-error hidden"></div>
-                    <button type="submit" class="btn btn-primary btn-full">Create Account</button>
-                    
-                    <div class="auth-divider"><span>OR</span></div>
-                    
-                    <button type="button" class="btn btn-google btn-full" onclick="window.handleGoogleLogin ? window.handleGoogleLogin() : null">
-                        <i class="ph-fill ph-google-logo"></i> Continue with Google
-                    </button>
-
-                    <p class="modal-footer-text">Already have an account? <a href="#" onclick="switchAuthMode('login')">Login here</a></p>
-                </form>
-            </div>
-
-            <!-- Profile View (Now handles redirection) -->
-            <div id="profileContainer" class="hidden">
-                <!-- REDIRECTION HANDLED BY NAVIGATION TO profile.html -->
             </div>
         </div>
     </div>

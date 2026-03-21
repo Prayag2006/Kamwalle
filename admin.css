@@ -199,26 +199,38 @@ h4 {
 /* =======================================================
    Admin Dashboard
    ======================================================= */
+/* =======================================================
+   Admin Dashboard Layout (Sidebar + Content)
+   ======================================================= */
 .admin-wrapper {
+    display: flex;
     min-height: 100vh;
+    overflow: hidden;
 }
 
-.admin-header {
+/* Sidebar Styling */
+.admin-sidebar {
+    width: 280px;
     background: var(--bg-surface);
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 0;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
 }
 
-.header-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
+.sidebar-header {
+    padding: 2rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid var(--border);
 }
 
-.logo {
+.admin-sidebar .logo {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -227,50 +239,175 @@ h4 {
     font-weight: 700;
     color: var(--secondary);
     text-decoration: none;
+    cursor: default;
 }
 
-.logo span {
+.admin-sidebar .logo span {
     color: var(--primary);
 }
 
-.logo i {
+.admin-sidebar .logo i {
     color: var(--primary);
     font-size: 1.8rem;
 }
 
+.sidebar-nav {
+    flex: 1;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+}
+
+.nav-item i {
+    font-size: 1.4rem;
+    transition: all 0.2s;
+}
+
+.nav-item:hover {
+    background: var(--primary-alpha);
+    color: var(--primary);
+}
+
+.nav-item.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(15, 98, 254, 0.25);
+}
+
+.sidebar-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.btn-logout-sidebar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+    padding: 0.85rem;
+    justify-content: center;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.btn-logout-sidebar:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Content Area Styling */
+.admin-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--bg-body);
+}
+
+.admin-header {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu-toggle-btn, .close-sidebar-btn {
+    background: var(--bg-body);
+    border: 1px solid var(--border);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-main);
+}
+
+.header-title-mobile {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
 .admin-main {
-    max-width: 1200px;
-    margin: 3rem auto;
-    padding: 0 2rem;
+    padding: 2rem;
+    max-width: 1300px;
+    width: 100%;
+    margin: 0 auto;
 }
 
 .admin-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .page-title h2 {
     font-size: 2rem;
-    color: var(--text-main);
+    color: var(--secondary);
     margin-bottom: 0.25rem;
 }
 
 .page-title p {
     color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.stat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
 }
 
 .stat-card {
     background: var(--bg-surface);
     border: 1px solid var(--border);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem 1.75rem;
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
     box-shadow: var(--shadow-sm);
-    min-width: 250px;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
 }
 
 .stat-icon {
@@ -411,81 +548,38 @@ h4 {
     color: var(--text-muted);
 }
 
-@media (max-width: 800px) {
-    .admin-top {
-        flex-direction: column;
-        gap: 2rem;
-    }
+/* Responsive Sidebar Logic */
+.mobile-only {
+    display: none;
+}
 
-    .stat-card {
-        width: 100%;
+@media (max-width: 1024px) {
+    .admin-sidebar {
+        position: fixed;
+        left: -280px;
+        box-shadow: 20px 0 50px rgba(0,0,0,0.1);
     }
+    .admin-sidebar.active {
+        left: 0;
+    }
+    .mobile-only {
+        display: flex;
+    }
+    .desktop-only {
+        display: none;
+    }
+    .admin-main {
+        padding: 1.5rem;
+    }
+}
 
+@media (max-width: 768px) {
     .stat-cards {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
-
-    .admin-tabs {
-        flex-direction: column;
+    .page-title h2 {
+        font-size: 1.5rem;
     }
-}
-
-/* Stat Cards Row */
-.stat-cards {
-    display: flex;
-    gap: 1rem;
-}
-
-.stat-card--booking .stat-icon {
-    background: rgba(5, 150, 105, 0.1);
-    color: #059669;
-}
-
-.stat-card--auth .stat-icon {
-    background: rgba(139, 92, 246, 0.1);
-    color: #8b5cf6;
-}
-
-/* Tabs & Tab Headers */
-.tab-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
-
-.admin-tabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 0;
-}
-
-.tab-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.85rem 1.5rem;
-    font-family: inherit;
-    font-size: 0.95rem;
-    font-weight: 600;
-    border: none;
-    background: none;
-    cursor: pointer;
-    color: var(--text-muted);
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    transition: all 0.2s;
-}
-
-.tab-btn:hover {
-    color: var(--primary);
-}
-
-.tab-btn.active {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
 }
 
 /* Booking specific tags */

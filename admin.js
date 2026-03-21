@@ -30,23 +30,50 @@ const db = getFirestore(app);
 // ---- API EXPORTS (for HTML onclick) ----
 window.switchTab = function (tab) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
 
     const tabEl = document.getElementById('tab-' + tab);
     if (tabEl) tabEl.classList.remove('hidden');
 
     // Update active button
-    const buttons = document.querySelectorAll('.tab-btn');
-    if (tab === 'contacts') buttons[0] && buttons[0].classList.add('active');
-    else if (tab === 'bookings') buttons[1] && buttons[1].classList.add('active');
-    else if (tab === 'users') buttons[2] && buttons[2].classList.add('active');
-    else if (tab === 'reviews') buttons[3] && buttons[3].classList.add('active');
+    const navItems = document.querySelectorAll('.nav-item');
+    if (tab === 'contacts') navItems[0] && navItems[0].classList.add('active');
+    else if (tab === 'bookings') navItems[1] && navItems[1].classList.add('active');
+    else if (tab === 'users') navItems[2] && navItems[2].classList.add('active');
+    else if (tab === 'reviews') navItems[3] && navItems[3].classList.add('active');
+
+    // Update UI Titles
+    const titleEl = document.getElementById('currentSectionTitle');
+    const descEl = document.getElementById('currentSectionDesc');
+    
+    if (tab === 'contacts') {
+        if (titleEl) titleEl.textContent = "Contact Requests";
+        if (descEl) descEl.textContent = "Manage customer inquiries and messages.";
+    } else if (tab === 'bookings') {
+        if (titleEl) titleEl.textContent = "Service Bookings";
+        if (descEl) descEl.textContent = "Track and manage maid service bookings.";
+    } else if (tab === 'users') {
+        if (titleEl) titleEl.textContent = "Registered Users";
+        if (descEl) descEl.textContent = "View and manage registered customer accounts.";
+    } else if (tab === 'reviews') {
+        if (titleEl) titleEl.textContent = "Customer Reviews";
+        if (descEl) descEl.textContent = "Monitor and moderate customer feedback.";
+    }
+
+    // Close sidebar on mobile
+    const adminSidebar = document.getElementById('adminSidebar');
+    if (adminSidebar) adminSidebar.classList.remove('active');
 
     // Refresh data when switching
     if (tab === 'contacts') loadContactData();
     if (tab === 'bookings') loadBookingData();
     if (tab === 'users') loadUserData();
     if (tab === 'reviews') loadReviewData();
+};
+
+window.handleAdminLogout = function () {
+    sessionStorage.removeItem('KAMWALLE_admin_auth');
+    location.reload();
 };
 
 window.openAdminReviewModal = function () {
@@ -148,13 +175,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Handle Logout
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            sessionStorage.removeItem('KAMWALLE_admin_auth');
-            const loginScreen = document.getElementById('login-screen');
-            const adminDashboard = document.getElementById('admin-dashboard');
-            if (loginScreen) loginScreen.classList.remove('hidden');
-            if (adminDashboard) adminDashboard.classList.add('hidden');
+    const logoutBtnSidebar = document.getElementById('logoutBtnSidebar');
+
+    if (logoutBtnSidebar) {
+        logoutBtnSidebar.addEventListener('click', handleAdminLogout);
+    }
+
+    // Sidebar Toggle
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const adminSidebar = document.getElementById('adminSidebar');
+
+    if (toggleSidebar && adminSidebar) {
+        toggleSidebar.addEventListener('click', () => {
+            adminSidebar.classList.add('active');
+        });
+    }
+
+    if (closeSidebar && adminSidebar) {
+        closeSidebar.addEventListener('click', () => {
+            adminSidebar.classList.remove('active');
         });
     }
 

@@ -274,10 +274,8 @@ button {
 }
 
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
 }
 
 .modal-close {
@@ -286,16 +284,23 @@ button {
 }
 
 .modal-form .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-form label {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
 .form-input-box {
     width: 100%;
-    padding: 0.875rem 1rem;
+    padding: 0.5rem 1rem;
     border: 1px solid var(--border);
     border-radius: var(--border-radius);
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 0.9rem;
     transition: border-color var(--transition-fast);
 }
 
@@ -1760,9 +1765,18 @@ button {
 
 .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 500;
     color: var(--text-main);
+}
+
+.input-tip {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+    font-style: italic;
 }
 
 .form-input-box {
@@ -2475,17 +2489,227 @@ button {
     width: 100%;
     max-width: 450px;
     border-radius: var(--border-radius-lg);
-    padding: 2.5rem;
+    padding: 1.5rem;
     position: relative;
     box-shadow: var(--shadow-lg);
     transform: translateY(20px) scale(0.95);
     transition: all var(--transition-smooth);
-    max-height: 90vh;
+    max-height: 96vh;
     overflow-y: auto;
 }
 
 .modal-overlay.active .modal-container {
     transform: translateY(0) scale(1);
+}
+
+.modal-container.auth-modal-premium {
+    max-width: 850px;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+}
+
+.forgot-link {
+    font-size: 0.75rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+.auth-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 580px) {
+    .auth-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+.auth-layout {
+    display: flex;
+    width: 100%;
+}
+
+.auth-side-panel {
+    width: 40%;
+    background: linear-gradient(135deg, var(--secondary) 0%, #333 100%);
+    padding: 3rem;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-side-panel::before {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: var(--primary);
+    filter: blur(80px);
+    opacity: 0.15;
+    top: -50px;
+    right: -50px;
+}
+
+.side-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 2.5rem;
+    font-family: var(--font-heading);
+}
+
+.side-logo i {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.auth-side-panel h3 {
+    font-size: 1.75rem;
+    line-height: 1.3;
+    margin-bottom: 2rem;
+    font-family: var(--font-heading);
+}
+
+.benefit-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.benefit-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.benefit-list li i {
+    color: var(--primary);
+    font-size: 1.25rem;
+}
+
+.auth-forms-container {
+    flex: 1;
+    padding: 1.5rem;
+    background: var(--bg-surface);
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 1.25rem;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    transition: color 0.3s;
+}
+
+.input-with-icon .form-input-box {
+    padding-left: 3.25rem;
+}
+
+.input-with-icon .form-input-box:focus + i {
+    color: var(--primary);
+}
+
+.btn-google-premium {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: white;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    padding: 0.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+}
+
+.btn-google-premium img {
+    width: 20px;
+}
+
+.btn-google-premium:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.auth-divider {
+    margin: 0.5rem 0;
+    position: relative;
+    text-align: center;
+}
+
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+}
+
+.auth-divider span {
+    position: relative;
+    background: var(--bg-surface);
+    padding: 0 1rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 850px) {
+    .modal-container.auth-modal-premium {
+        max-width: 480px;
+        width: 95%;
+    }
+    .auth-side-panel {
+        display: none;
+    }
+    .auth-forms-container {
+        padding: 1.25rem;
+    }
+}
+
+@media (max-height: 700px) {
+    .auth-forms-container {
+        padding: 1rem;
+    }
+    .modal-header {
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    .auth-divider {
+        margin: 0.25rem 0;
+    }
 }
 
 .modal-close {
@@ -2500,12 +2724,12 @@ button {
 
 .modal-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0.75rem;
 }
 
 .modal-header h2 {
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+    margin-bottom: 0.25rem;
 }
 
 .modal-header p {
@@ -3173,4 +3397,40 @@ button {
     margin-bottom: 2rem;
     font-family: var(--font-body);
     font-size: 1.05rem;
+}
+
+/* Auth Modal Footer Styles */
+.modal-footer {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+@media (max-height: 600px) {
+    .modal-footer {
+        margin-top: 0.25rem;
+        padding-top: 0.25rem;
+    }
+    .modal-footer-text {
+        font-size: 0.85rem;
+    }
+}
+
+.modal-footer-text {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.modal-footer-text a {
+    color: var(--primary);
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: 0.25rem;
+    transition: all 0.3s;
+}
+
+.modal-footer-text a:hover {
+    text-decoration: underline;
+    color: var(--primary-dark);
 }

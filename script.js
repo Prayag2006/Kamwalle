@@ -6,6 +6,7 @@ import {
     signInWithEmailLink,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    sendPasswordResetEmail,
     onAuthStateChanged,
     signOut,
     updateProfile,
@@ -29,6 +30,7 @@ import {
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
 /**
  * KAMWALLE Premium Theme Scripts
@@ -48,6 +50,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const functions = getFunctions(app);
 let analytics;
 try {
   analytics = getAnalytics(app);
@@ -177,19 +180,36 @@ window.closeReviewModal = function() {
         document.body.style.overflow = '';
     }
 };
+window.switchAuthMode = function (mode) {
+    const login = document.getElementById('loginFormContainer');
+    const register = document.getElementById('registerFormContainer');
+    const profile = document.getElementById('profileContainer');
 
-window.switchAuthMode = function(mode) {
-    const loginCont = document.getElementById('loginFormContainer');
-    const registerCont = document.getElementById('registerFormContainer');
-    const profileCont = document.getElementById('profileContainer');
+    // Smooth transition
+    const containers = [login, register, profile].filter(el => el !== null);
+    
+    containers.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(10px)';
+        el.style.transition = 'all 0.3s ease';
+    });
 
-    if (loginCont) loginCont.classList.add('hidden');
-    if (registerCont) registerCont.classList.add('hidden');
-    if (profileCont) profileCont.classList.add('hidden');
+    setTimeout(() => {
+        containers.forEach(el => el.classList.add('hidden'));
 
-    if (mode === 'login' && loginCont) loginCont.classList.remove('hidden');
-    else if (mode === 'register' && registerCont) registerCont.classList.remove('hidden');
-    else if (mode === 'profile' && profileCont) profileCont.classList.remove('hidden');
+        let target = null;
+        if (mode === 'login') target = login;
+        else if (mode === 'register') target = register;
+        else if (mode === 'profile') target = profile;
+
+        if (target) {
+            target.classList.remove('hidden');
+            // Trigger reflow
+            void target.offsetWidth;
+            target.style.opacity = '1';
+            target.style.transform = 'translateY(0)';
+        }
+    }, 200);
 };
 
 window.showProfile = function() {
@@ -453,8 +473,8 @@ document.addEventListener('DOMContentLoaded', () => {
             userProfileGroups.forEach(el => el.classList.add('hidden'));
             
             // Redirect if on profile page and logged out
-            if (window.location.href.includes('profile.html')) {
-                window.location.href = 'index.html';
+            if (window.location.href.includes('profile.html') || window.location.pathname.endsWith('/profile')) {
+                window.location.href = '/';
             }
         }
     });
@@ -1054,6 +1074,67 @@ async function handleLogin(e) {
         }
     }
 }
+
+window.handleForgotPassword = async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('l_email').value.trim();
+    if (!email) {
+        alert("Please enter your email to reset password.");
+        return;
+    }
+    let resetBtn = null;
+    if (e.target && e.target.tagName === 'FORM') {
+        resetBtn = e.target.querySelector('button[type="submit"]');
+    } else if (e.target && e.target.tagName === 'BUTTON') {
+        resetBtn = e.target;
+    }
+    
+    let originalText = '';
+    if (resetBtn) {
+        originalText = resetBtn.innerHTML;
+        resetBtn.disabled = true;
+        resetBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Sending...';
+    }
+
+    if (confirm("Send secure password reset link to " + email + "?")) {
+        try {
+            // Using a relative path which automatically resolves to your Vercel URL
+            const response = await fetch('/api/sendResetEmail', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to send reset email.');
+            }
+
+            showHomeStatus("Reset Link Sent", "Please check your email for the newly designed reset link.", "success");
+        } catch (error) {
+            console.error("Password reset error:", error);
+            // Fallback natively if API setup fails or errors
+            if (error.message.includes('Server configuration error')) {
+                console.warn('Vercel API failed, falling back to standard Firebase...');
+                await sendPasswordResetEmail(auth, email);
+                showHomeStatus("Reset Link Sent", "Used standard fallback. Please check email.", "success");
+                return;
+            }
+            alert("Error sending reset link: " + error.message);
+        } finally {
+            if (resetBtn) {
+                resetBtn.disabled = false;
+                resetBtn.innerHTML = originalText;
+            }
+        }
+    } else {
+        if (resetBtn) {
+            resetBtn.disabled = false;
+            resetBtn.innerHTML = originalText;
+        }
+    }
+};
 
 // Google login is now at the top
 
