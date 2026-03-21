@@ -3147,6 +3147,32 @@ button {
 
 .status-paid { background: #dcfce7; color: #059669; }
 
+.btn-receipt {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #334155;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: all 0.2s ease;
+}
+
+.btn-receipt i {
+    font-size: 0.95rem;
+    color: var(--primary);
+}
+
+.btn-receipt:hover {
+    background: #e2e8f0;
+    color: var(--primary-dark);
+    border-color: #cbd5e1;
+}
+
 /* Actions */
 .profile-actions {
     margin-top: 1rem;

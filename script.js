@@ -1200,9 +1200,14 @@ async function loadUserHistory(userId) {
                     <div class="history-mid">
                         <i class="ph ph-calendar"></i> ${b.date}
                     </div>
-                    <div class="history-bottom">
+                    <div class="history-bottom" style="display:flex; justify-content:space-between; align-items:center;">
                         <span class="payment-id-badge">${b.paymentId || 'MOCK_PAY'}</span>
-                        <span class="status-pill status-${b.status || 'paid'}">${(b.status || 'paid').toUpperCase()}</span>
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <button class="btn-receipt" onclick="window.downloadReceipt('${encodeURIComponent(JSON.stringify(b))}')" title="Download Receipt">
+                                <i class="ph ph-download-simple"></i> Receipt
+                            </button>
+                            <span class="status-pill status-${b.status || 'paid'}">${(b.status || 'paid').toUpperCase()}</span>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1218,3 +1223,84 @@ async function loadUserHistory(userId) {
 document.getElementById('authModalOverlay')?.addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeAuthModal();
 });
+
+window.downloadReceipt = function(bDataStr) {
+    try {
+        const b = JSON.parse(decodeURIComponent(bDataStr));
+        const receiptWindow = window.open('', '_blank');
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Receipt - Kamwalle</title>
+    <style>
+        body { font-family: 'Inter', Arial, sans-serif; padding: 40px; background: #f8fafc; color: #1e293b; }
+        .invoice-box { max-width: 600px; margin: auto; padding: 30px; border: 1px solid #e2e8f0; background: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-radius: 12px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 20px; }
+        .logo-text { font-size: 28px; font-weight: bold; color: #0f62fe; }
+        .invoice-title { font-size: 24px; color: #475569; padding-top: 5px; }
+        .details { display: flex; justify-content: space-between; margin-bottom: 30px; line-height: 1.6; }
+        .item-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .item-table th, .item-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: left; }
+        .item-table th { background: #f1f5f9; color: #475569; font-weight: 600; }
+        .total-row td { font-weight: bold; font-size: 18px; color: #0f62fe; border-bottom:none; }
+        .footer { text-align: center; color: #64748b; font-size: 14px; margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <div class="header">
+            <div class="logo-text">KAMWALLE</div>
+            <div class="invoice-title">RECEIPT</div>
+        </div>
+        <div class="details">
+            <div>
+                <strong>Billed To:</strong><br>
+                Customer<br>
+                User ID: ${b.userId ? b.userId.substring(0,8) + '...' : 'N/A'}
+            </div>
+            <div style="text-align: right;">
+                <strong>Receipt #:</strong> ${b.paymentId || 'MOCK_PAY'}<br>
+                <strong>Date:</strong> ${b.date}<br>
+                <strong>Status:</strong> <span style="color:#0f62fe; font-weight:bold;">PAID</span>
+            </div>
+        </div>
+        <table class="item-table">
+            <thead>
+                <tr>
+                    <th>Service Description</th>
+                    <th style="text-align:right">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${b.service} - Platform Booking Fee</td>
+                    <td style="text-align:right">₹${b.amount}</td>
+                </tr>
+                <tr class="total-row">
+                    <td style="text-align:right">Total Paid:</td>
+                    <td style="text-align:right">₹${b.amount}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="footer">
+            Thank you for choosing Kamwalle. Download our App today!<br>
+            kamwalle.in | support@kamwalle.in
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            setTimeout(() => {
+                window.print();
+            }, 500);
+        }
+    </script>
+</body>
+</html>`;
+        receiptWindow.document.write(html);
+        receiptWindow.document.close();
+    } catch(e) {
+        console.error("Failed to generate receipt", e);
+        alert("Failed to build receipt.");
+    }
+};
