@@ -52,7 +52,8 @@ export default async function handler(req, res) {
         // The firebaseLink is the default Firebase app URL (kamwala-app-xyz123.firebaseapp.com)
         // We extract the oobCode (token) and apiKey from it to create our custom domain link
         const urlObj = new URL(firebaseLink);
-        const resetLink = `${origin}/reset-password.html${urlObj.search}`;
+        // Use /reset-password (no .html) because vercel.json has "cleanUrls": true
+        const resetLink = `${origin}/reset-password${urlObj.search}`;
 
         // Send Custom Premium HTML Email
         const transporter = nodemailer.createTransport({
@@ -70,7 +71,7 @@ export default async function handler(req, res) {
             html: `
             <div style="font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f4f7f6; padding: 20px;">
                 <div style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.05);">
-                    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 30px; text-align: center;">
+                    <div style="background: linear-gradient(135deg, #0F62FE 0%, #0050d4 100%); padding: 40px 30px; text-align: center;">
                         <h1 style="color: white; margin: 0; font-size: 32px; letter-spacing: 2px; text-transform: uppercase;">KAMWALLE</h1>
                     </div>
                     <div style="padding: 40px 30px;">
@@ -81,11 +82,11 @@ export default async function handler(req, res) {
                             If you made this request, please click the button below to set a new password securely.
                         </p>
                         <div style="text-align: center; margin: 35px 0;">
-                            <a href="${resetLink}" style="background-color: #10b981; color: white; padding: 16px 36px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.25); transition: background-color 0.3s;">Reset My Password</a>
+                            <a href="${resetLink}" style="background-color: #0F62FE; color: white; padding: 16px 36px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(15, 98, 254, 0.25); transition: background-color 0.3s;">Reset My Password</a>
                         </div>
                         <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin-top: 30px;">
                             If the button doesn't work, copy and paste this link into your browser:<br>
-                            <a href="${resetLink}" style="color: #10b981; text-decoration: none; word-break: break-all; margin-top: 8px; display: inline-block;">${resetLink}</a>
+                            <a href="${resetLink}" style="color: #0F62FE; text-decoration: none; word-break: break-all; margin-top: 8px; display: inline-block;">${resetLink}</a>
                         </p>
                         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
                         <p style="color: #9ca3af; font-size: 13px; text-align: center; margin: 0; line-height: 1.5;">

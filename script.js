@@ -1098,7 +1098,7 @@ window.handleForgotPassword = async function(e) {
 
     if (confirm("Send secure password reset link to " + email + "?")) {
         try {
-            // Using a relative path which automatically resolves to your Vercel URL
+            // Try the Vercel serverless API first (sends custom-branded email)
             const response = await fetch('/api/sendResetEmail', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -1111,15 +1111,26 @@ window.handleForgotPassword = async function(e) {
                 throw new Error(data.error || 'Failed to send reset email.');
             }
 
-            showHomeStatus("Reset Link Sent", "Please check your email for the newly designed reset link.", "success");
+            showHomeStatus("Reset Link Sent", "Please check your email for the password reset link.", "success");
         } catch (error) {
-            console.error("Password reset error:", error);
-            // Normal error handling
-            let friendlyMsg = error.message;
-            if (friendlyMsg.includes('INTERNAL ASSERT FAILED') || friendlyMsg.includes('user-not-found') || friendlyMsg.includes('RECORD_NOT_FOUND')) {
-                friendlyMsg = "Account not found! Please create an account first.";
+            console.error("API reset failed, falling back to Firebase client SDK:", error);
+            // Fallback: use Firebase client-side sendPasswordResetEmail
+            // This works locally and anywhere without needing a backend server
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showHomeStatus("Reset Link Sent", "Please check your email for the password reset link.", "success");
+            } catch (fbError) {
+                console.error("Firebase password reset error:", fbError);
+                let friendlyMsg = fbError.message;
+                if (fbError.code === 'auth/user-not-found') {
+                    friendlyMsg = "Account not found! Please create an account first.";
+                } else if (fbError.code === 'auth/too-many-requests') {
+                    friendlyMsg = "Too many attempts. Please try again later.";
+                } else if (friendlyMsg.includes('INTERNAL ASSERT FAILED') || friendlyMsg.includes('RECORD_NOT_FOUND')) {
+                    friendlyMsg = "Account not found! Please create an account first.";
+                }
+                showHomeStatus("Reset Failed", friendlyMsg, "error");
             }
-            showHomeStatus("Reset Failed", friendlyMsg, "error");
         } finally {
             if (resetBtn) {
                 resetBtn.disabled = false;
