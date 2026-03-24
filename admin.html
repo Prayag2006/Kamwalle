@@ -61,6 +61,12 @@
                 <button class="nav-item" onclick="switchTab('users')">
                     <i class="ph ph-user-list"></i> <span>Registered Users</span>
                 </button>
+                <button class="nav-item" onclick="switchTab('customers')">
+                    <i class="ph ph-address-book"></i> <span>Customer Details</span>
+                </button>
+                <button class="nav-item" onclick="switchTab('workers')">
+                    <i class="ph ph-wrench"></i> <span>Workers</span>
+                </button>
                 <button class="nav-item" onclick="switchTab('reviews')">
                     <i class="ph ph-star"></i> <span>Customer Reviews</span>
                 </button>
@@ -115,6 +121,20 @@
                             <div class="stat-info">
                                 <h3>Reviews</h3>
                                 <p id="totalReviewStat">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-card--customers" style="border-left: 4px solid #8b5cf6;">
+                            <div class="stat-icon" style="color: #8b5cf6; background: rgba(139, 92, 246, 0.1);"><i class="ph-fill ph-address-book"></i></div>
+                            <div class="stat-info">
+                                <h3>Customers</h3>
+                                <p id="totalCustomersStat">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-card--workers" style="border-left: 4px solid #f59e0b;">
+                            <div class="stat-icon" style="color: #f59e0b; background: rgba(245, 158, 11, 0.1);"><i class="ph-fill ph-wrench"></i></div>
+                            <div class="stat-info">
+                                <h3>Workers</h3>
+                                <p id="totalWorkersStat">0</p>
                             </div>
                         </div>
                     </div>
@@ -244,41 +264,517 @@
                     <p>Customer reviews submitted on the homepage will appear here.</p>
                 </div>
             </div>
+
+            <!-- Customer Details Tab -->
+            <div class="tab-content hidden" id="tab-customers">
+                <div class="tab-header">
+                    <div class="header-info">
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Manage manually added customer details.</p>
+                    </div>
+                    <div class="header-actions" style="display: flex; gap: 0.8rem;">
+                        <button class="btn btn-sm btn-primary" onclick="window.openAddCustomerModal()">
+                            <i class="ph ph-plus-circle"></i> Add Customer
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container" id="customersTableContainer">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Date Added</th>
+                                <th>Name</th>
+                                <th>Phone Number</th>
+                                <th>Address</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody">
+                            <!-- JS injected -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyCustomers" class="empty-state hidden">
+                    <div class="empty-icon"><i class="ph-fill ph-address-book"></i></div>
+                    <h3>No Customers Yet</h3>
+                    <p>Manually added customers will appear here.</p>
+                </div>
+            </div>
+
+            <!-- Workers Tab -->
+            <div class="tab-content hidden" id="tab-workers">
+                <div class="tab-header">
+                    <div class="header-info">
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Manage worker details and availability.</p>
+                    </div>
+                    <div class="header-actions" style="display: flex; gap: 0.8rem;">
+                        <button class="btn btn-sm btn-primary" onclick="window.openAddWorkerModal()">
+                            <i class="ph ph-plus-circle"></i> Add Worker
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container" id="workersTableContainer">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Date Added</th>
+                                <th>Name</th>
+                                <th>Phone Number</th>
+                                <th>Service Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workersTableBody">
+                            <!-- JS injected -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyWorkers" class="empty-state hidden">
+                    <div class="empty-icon"><i class="ph-fill ph-wrench"></i></div>
+                    <h3>No Workers Yet</h3>
+                    <p>Manually added workers will appear here.</p>
+                </div>
+            </div>
         </main>
     </div>
 
     <!-- Admin Logic -->
     <!-- Add Review Modal (Admin Only) -->
+    <!-- Add Review Modal (Admin Only) -->
     <div id="adminReviewModal" class="modal hidden">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content">
             <div class="modal-header">
                 <h2><i class="ph ph-plus-circle"></i> Add Manual Review</h2>
                 <button onclick="closeAdminReviewModal()" class="close-btn"><i class="ph ph-x"></i></button>
             </div>
-            <form id="adminReviewForm" style="padding: 1.5rem;">
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Customer Name</label>
-                    <input type="text" id="adminRevName" placeholder="e.g. Rajesh Kumar" required class="admin-input"
-                        style="margin-bottom: 0;">
+            <form id="adminReviewForm" style="display: contents;">
+                <div class="modal-body-scroll">
+                    <div class="form-group">
+                        <label>Customer Name</label>
+                        <input type="text" id="adminRevName" placeholder="e.g. Rajesh Kumar" required class="admin-input" style="margin-bottom: 0;">
+                    </div>
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <select id="adminRevRating" class="admin-input" style="margin-bottom: 0;">
+                            <option value="5">5 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="3">3 Stars</option>
+                            <option value="2">2 Stars</option>
+                            <option value="1">1 Star</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Review Content</label>
+                        <textarea id="adminRevText" placeholder="Write the review content here..." required class="admin-input" style="min-height: 100px; margin-bottom: 0;"></textarea>
+                    </div>
                 </div>
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Rating</label>
-                    <select id="adminRevRating" class="admin-input" style="margin-bottom: 0;">
-                        <option value="5">5 Stars</option>
-                        <option value="4">4 Stars</option>
-                        <option value="3">3 Stars</option>
-                        <option value="2">2 Stars</option>
-                        <option value="1">1 Star</option>
-                    </select>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-full" id="adminRevSubmitBtn">
+                        <i class="ph ph-paper-plane-tilt"></i> Post Review to Firestore
+                    </button>
                 </div>
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; margin-bottom: 5px; font-weight: 600;">Review Content</label>
-                    <textarea id="adminRevText" placeholder="Write the review content here..." required
-                        class="admin-input" style="min-height: 100px; margin-bottom: 0;"></textarea>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Customer Modal -->
+    <div id="addCustomerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="ph ph-user-plus"></i> Add New Customer</h2>
+                <button onclick="window.closeAddCustomerModal()" class="close-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="addCustomerForm" style="display: contents;">
+                <div class="modal-body-scroll">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="addCustName" placeholder="e.g. John Doe" required class="admin-input" style="margin-bottom: 0;">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="addCustPhone" placeholder="e.g. 9876543210" required class="admin-input" style="margin-bottom: 0;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Residential Address</label>
+                        <textarea id="addCustAddress" placeholder="Enter full address" required class="admin-input" style="min-height: 60px; margin-bottom: 0;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Assign Worker (Optional)</label>
+                        <select id="addCustWorker" class="admin-input" style="margin-bottom: 0;">
+                            <option value="">-- No Worker Assigned --</option>
+                            <!-- JS Injected -->
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Additional Notes</label>
+                        <textarea id="addCustNote" placeholder="Any specific requirements or notes..." class="admin-input" style="min-height: 80px; margin-bottom: 0;"></textarea>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-full" id="adminRevSubmitBtn">
-                    <i class="ph ph-paper-plane-tilt"></i> Post Review to Firestore
+                <div class="modal-footer">
+                    <button type="button" onclick="window.closeAddCustomerModal()" class="btn btn-outline" style="min-width: 120px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="addCustSubmitBtn" style="min-width: 150px;">
+                        <i class="ph ph-floppy-disk"></i> Save Customer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Customer Modal -->
+    <div id="viewCustomerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="ph ph-user-focus"></i> Customer Profile</h2>
+                <button onclick="window.closeViewCustomerModal()" class="close-btn"><i class="ph ph-x"></i></button>
+            </div>
+            
+            <div class="modal-body-scroll">
+                <!-- Basic Info Grid -->
+                <div class="form-grid">
+                    <div class="info-group">
+                        <label>Full Name</label>
+                        <div class="view-data" id="viewCustName">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <label>Phone Number</label>
+                        <div class="view-data" style="color: var(--primary);">
+                            <i class="ph ph-phone-call"></i>
+                            <span id="viewCustPhone"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Section -->
+                <div class="info-group" style="margin-top: 1.5rem;">
+                    <label>Residential Address</label>
+                    <div class="view-box">
+                        <i class="ph ph-map-pin"></i>
+                        <div id="viewCustAddress"></div>
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div class="info-group" style="margin-top: 1.5rem;">
+                    <label>Admin Notes & Remarks</label>
+                    <div class="view-box view-box--notes">
+                        <i class="ph ph-note-pencil"></i>
+                        <div id="viewCustNote" style="white-space: pre-wrap;"></div>
+                    </div>
+                </div>
+
+                <!-- Assigned Worker Section -->
+                <div id="viewCustWorkerSection" style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed var(--border); display: none;">
+                    <label>Assigned Worker</label>
+                    <div class="assigned-worker-card">
+                        <div class="worker-avatar">
+                            <i class="ph-fill ph-user-gear"></i>
+                        </div>
+                        <div class="worker-details">
+                            <div id="viewCustWorkerName" class="worker-name">No worker assigned</div>
+                            <div class="worker-meta">
+                                <span id="viewCustWorkerService"><i class="ph ph-briefcase"></i> <span>N/A</span></span>
+                                <span id="viewCustWorkerPhone"><i class="ph ph-phone"></i> <span>N/A</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="window.openEditCustomerModal()" class="btn btn-outline" style="min-width: 140px;">
+                    <i class="ph ph-note-pencil"></i> Edit Profile
                 </button>
+                <button onclick="window.closeViewCustomerModal()" class="btn btn-primary" style="min-width: 120px;">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Worker Modal -->
+    <div id="addWorkerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="ph ph-user-plus"></i> Add Worker Details</h2>
+                <button onclick="window.closeAddWorkerModal()" class="close-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="addWorkerForm" style="display: contents;">
+                <div class="modal-body-scroll">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Worker Name</label>
+                            <input type="text" id="addWorkName" placeholder="e.g. Ramesh Bhai" required class="admin-input" style="margin-bottom: 0;">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="addWorkPhone" placeholder="e.g. 9876543210" required class="admin-input" style="margin-bottom: 0;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Service Type</label>
+                            <select id="addWorkService" class="admin-input" style="margin-bottom: 0;">
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="Cooking">Cooking</option>
+                                <option value="Washing">Washing</option>
+                                <option value="Full Maid">Full Maid</option>
+                                <option value="Elder Care">Elder Care</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Experience (Years)</label>
+                            <input type="number" id="addWorkExp" placeholder="e.g. 5" class="admin-input" style="margin-bottom: 0;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="addWorkAddress" placeholder="Enter full address" required class="admin-input" style="min-height: 60px; margin-bottom: 0;"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Additional Notes</label>
+                        <textarea id="addWorkNote" placeholder="Any specific skills or notes..." class="admin-input" style="min-height: 80px; margin-bottom: 0;"></textarea>
+                    </div>
+
+                    <div class="form-grid" style="margin-top: 1.5rem;">
+                        <div class="form-group">
+                            <label>Document Type</label>
+                            <select id="addWorkDocType" class="admin-input" style="margin-bottom: 0;">
+                                <option value="Aadhar Card">Aadhar Card</option>
+                                <option value="PAN Card">PAN Card</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Upload Document</label>
+                            <input type="file" id="addWorkFile" accept="image/*,.pdf" class="admin-input" style="margin-bottom: 0; padding-top: 8px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="window.closeAddWorkerModal()" class="btn btn-outline" style="min-width: 120px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="addWorkSubmitBtn" style="min-width: 150px;">
+                        <i class="ph ph-floppy-disk"></i> Save Worker
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Worker Modal -->
+    <div id="viewWorkerModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 550px;">
+            <div class="modal-header">
+                <h2><i class="ph ph-user-focus"></i> Worker Profile</h2>
+                <button onclick="window.closeViewWorkerModal()" class="close-btn"><i class="ph ph-x"></i></button>
+            </div>
+            
+            <div class="modal-body-scroll">
+                <!-- Basic Info Grid -->
+                <div class="form-grid">
+                    <div class="info-group">
+                        <label>Full Name</label>
+                        <div class="view-data" id="viewWorkName">
+                            <!-- JS Inject -->
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <label>Phone Number</label>
+                        <div class="view-data" style="color: var(--primary);">
+                            <i class="ph ph-phone-call"></i>
+                            <span id="viewWorkPhone"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Info Grid -->
+                <div class="form-grid" style="margin-top: 1.5rem;">
+                    <div class="info-group">
+                        <label>Service Type</label>
+                        <div class="view-data">
+                            <i class="ph ph-briefcase"></i>
+                            <span id="viewWorkService"></span>
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <label>Experience</label>
+                        <div class="view-data" style="color: var(--primary);">
+                            <i class="ph ph-calendar-star"></i>
+                            <span id="viewWorkExp"></span> Years
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Section -->
+                <div class="info-group" style="margin-top: 1.5rem;">
+                    <label>Residential Address</label>
+                    <div class="view-box">
+                        <i class="ph ph-map-pin"></i>
+                        <div id="viewWorkAddress"></div>
+                    </div>
+                </div>
+
+                <!-- Admin Notes Section -->
+                <div class="info-group" style="margin-top: 1.5rem;">
+                    <label>Admin Notes & Remarks</label>
+                    <div class="view-box view-box--notes">
+                        <i class="ph ph-note-pencil"></i>
+                        <div id="viewWorkNote" style="white-space: pre-wrap;"></div>
+                    </div>
+                </div>
+
+                <!-- Document Section -->
+                <div id="viewWorkDocSection" style="margin-top: 1.5rem; display: none;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Worker Document</label>
+                    <div class="view-box">
+                        <i class="ph ph-file-text"></i>
+                        <div style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <span id="viewWorkDocType" style="font-weight: 600; font-size: 0.9rem;"></span>
+                            </div>
+                            <a id="viewWorkDocLink" href="#" target="_blank" class="btn btn-sm btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+                                <i class="ph ph-eye"></i> View Document
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assigned Customers Section -->
+                <div id="viewWorkCustomerSection" style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
+                    <label style="display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 1rem;">Assigned Customers</label>
+                    <div id="viewWorkCustomerList" class="assigned-customer-list">
+                        <!-- JS Dynamic Injection -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="window.openEditWorkerModal()" class="btn btn-outline" style="min-width: 140px;">
+                    <i class="ph ph-note-pencil"></i> Edit Profile
+                </button>
+                <button onclick="window.closeViewWorkerModal()" class="btn btn-primary" style="padding: 0.6rem 2rem;">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Worker Modal -->
+    <div id="editWorkerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="ph ph-note-pencil"></i> Modify Worker Details</h2>
+                <button onclick="window.closeEditWorkerModal()" class="close-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="editWorkerForm" style="display: contents;">
+                <div class="modal-body-scroll">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="editWorkName" required placeholder="Full Name" class="admin-input" style="margin-bottom: 0;">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="editWorkPhone" required placeholder="Phone Number" class="admin-input" style="margin-bottom: 0;">
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Service Type</label>
+                            <select id="editWorkService" class="admin-input" style="margin-bottom: 0;">
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="Cooking">Cooking</option>
+                                <option value="Washing">Washing</option>
+                                <option value="Full Maid">Full Maid</option>
+                                <option value="Elder Care">Elder Care</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Experience (Years)</label>
+                            <input type="number" id="editWorkExp" placeholder="Experience" class="admin-input" style="margin-bottom: 0;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Residential Address</label>
+                        <textarea id="editWorkAddress" rows="3" required placeholder="Address" class="admin-input" style="min-height: 60px; margin-bottom: 0; resize: vertical;"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Admin Notes</label>
+                        <textarea id="editWorkNote" rows="3" placeholder="Additional Notes" class="admin-input" style="min-height: 80px; margin-bottom: 0; resize: vertical;"></textarea>
+                    </div>
+
+                    <div class="form-grid" style="margin-top: 1.5rem;">
+                        <div class="form-group">
+                            <label>Document Type</label>
+                            <select id="editWorkDocType" class="admin-input" style="margin-bottom: 0;">
+                                <option value="Aadhar Card">Aadhar Card</option>
+                                <option value="PAN Card">PAN Card</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Upload New Document (Optional)</label>
+                            <input type="file" id="editWorkFile" accept="image/*,.pdf" class="admin-input" style="margin-bottom: 0; padding-top: 8px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="window.closeEditWorkerModal()" class="btn btn-outline" style="min-width: 120px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="min-width: 150px;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="editCustomerModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="ph ph-note-pencil"></i> Modify Details</h2>
+                <button onclick="window.closeEditCustomerModal()" class="close-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="editCustomerForm" style="display: contents;">
+                <div class="modal-body-scroll">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="editCustName" required placeholder="Full Name" class="admin-input" style="margin-bottom: 0;">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="editCustPhone" required placeholder="Phone Number" class="admin-input" style="margin-bottom: 0;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Residential Address</label>
+                        <textarea id="editCustAddress" rows="3" required placeholder="Address" class="admin-input" style="min-height: 60px; margin-bottom: 0; resize: vertical;"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Assign Worker</label>
+                        <select id="editCustWorker" class="admin-input" style="margin-bottom: 0;">
+                            <option value="">-- No Worker Assigned --</option>
+                            <!-- JS Injected Options -->
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Admin Notes</label>
+                        <textarea id="editCustNote" rows="3" placeholder="Additional Notes" class="admin-input" style="min-height: 80px; margin-bottom: 0; resize: vertical;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="window.closeEditCustomerModal()" class="btn btn-outline" style="min-width: 120px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="min-width: 150px;">Save Changes</button>
+                </div>
             </form>
         </div>
     </div>

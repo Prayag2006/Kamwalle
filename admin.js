@@ -3,10 +3,13 @@ import {
     getFirestore,
     collection,
     getDocs,
+    getDoc,
     deleteDoc,
     addDoc,
+    updateDoc,
     doc,
     query,
+    where,
     orderBy,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -27,6 +30,30 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// --- Cloudinary Config ---
+const CLOUDINARY_CLOUD_NAME = "dy3b509jd";
+const CLOUDINARY_UPLOAD_PRESET = "AdharCard"; // Updated from screenshot
+
+// --- Cloudinary Upload Helper ---
+const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, {
+        method: "POST",
+        body: formData
+    });
+
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error?.message || "Cloudinary upload failed");
+    }
+
+    const data = await res.json();
+    return data.secure_url;
+};
+
 // ---- API EXPORTS (for HTML onclick) ----
 window.switchTab = function (tab) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -40,7 +67,9 @@ window.switchTab = function (tab) {
     if (tab === 'contacts') navItems[0] && navItems[0].classList.add('active');
     else if (tab === 'bookings') navItems[1] && navItems[1].classList.add('active');
     else if (tab === 'users') navItems[2] && navItems[2].classList.add('active');
-    else if (tab === 'reviews') navItems[3] && navItems[3].classList.add('active');
+    else if (tab === 'customers') navItems[3] && navItems[3].classList.add('active');
+    else if (tab === 'workers') navItems[4] && navItems[4].classList.add('active');
+    else if (tab === 'reviews') navItems[5] && navItems[5].classList.add('active');
 
     // Update UI Titles
     const titleEl = document.getElementById('currentSectionTitle');
@@ -55,6 +84,12 @@ window.switchTab = function (tab) {
     } else if (tab === 'users') {
         if (titleEl) titleEl.textContent = "Registered Users";
         if (descEl) descEl.textContent = "View and manage registered customer accounts.";
+    } else if (tab === 'customers') {
+        if (titleEl) titleEl.textContent = "Customer Database";
+        if (descEl) descEl.textContent = "Manage manually added customer details.";
+    } else if (tab === 'workers') {
+        if (titleEl) titleEl.textContent = "Worker Database";
+        if (descEl) descEl.textContent = "Manage worker profiles and service details.";
     } else if (tab === 'reviews') {
         if (titleEl) titleEl.textContent = "Customer Reviews";
         if (descEl) descEl.textContent = "Monitor and moderate customer feedback.";
@@ -68,6 +103,8 @@ window.switchTab = function (tab) {
     if (tab === 'contacts') loadContactData();
     if (tab === 'bookings') loadBookingData();
     if (tab === 'users') loadUserData();
+    if (tab === 'customers') loadCustomerData();
+    if (tab === 'workers') loadWorkerData();
     if (tab === 'reviews') loadReviewData();
 };
 
@@ -86,6 +123,268 @@ window.closeAdminReviewModal = function () {
     const form = document.getElementById('adminReviewForm');
     if (modal) modal.classList.add('hidden');
     if (form) form.reset();
+};
+
+window.openAddCustomerModal = async function () {
+    const modal = document.getElementById('addCustomerModal');
+    if (modal) {
+        document.getElementById('addCustomerForm').reset();
+        
+        // Populate workers dropdown
+        const workerSelect = document.getElementById('addCustWorker');
+        if (workerSelect) {
+            workerSelect.innerHTML = '<option value="">-- No Worker Assigned --</option>';
+            try {
+                const q = query(collection(db, "workers"), orderBy("name", "asc"));
+                const qs = await getDocs(q);
+                qs.forEach(wDoc => {
+                    const w = wDoc.data();
+                    const opt = document.createElement('option');
+                    opt.value = wDoc.id;
+                    opt.textContent = `${w.name} (${w.service || 'N/A'})`;
+                    workerSelect.appendChild(opt);
+                });
+            } catch (err) {
+                console.error("Error populating workers dropdown for add customer:", err);
+            }
+        }
+
+        modal.classList.remove('hidden');
+    }
+};
+
+window.closeAddCustomerModal = function () {
+    const modal = document.getElementById('addCustomerModal');
+    const form = document.getElementById('addCustomerForm');
+    if (modal) modal.classList.add('hidden');
+    if (form) form.reset();
+};
+
+window.openAddWorkerModal = function () {
+    const modal = document.getElementById('addWorkerModal');
+    if (modal) modal.classList.remove('hidden');
+};
+
+window.closeAddWorkerModal = function () {
+    const modal = document.getElementById('addWorkerModal');
+    const form = document.getElementById('addWorkerForm');
+    if (modal) modal.classList.add('hidden');
+    if (form) form.reset();
+};
+
+let currentViewingCustomer = null;
+let currentViewingWorker = null;
+window.allWorkersData = {};
+
+window.viewWorkerDetails = async function (name, phone, service, exp, address, note, id, isFirestore) {
+    const modal = document.getElementById('viewWorkerModal');
+    if (modal) {
+        const decodedName = decodeURIComponent(name);
+        const decodedPhone = decodeURIComponent(phone);
+        const decodedService = decodeURIComponent(service);
+        const decodedExp = decodeURIComponent(exp);
+        const decodedAddress = decodeURIComponent(address);
+        const decodedNote = decodeURIComponent(note);
+
+        currentViewingWorker = { 
+            name: decodedName, 
+            phone: decodedPhone, 
+            service: decodedService,
+            exp: decodedExp,
+            address: decodedAddress, 
+            note: decodedNote, 
+            id, 
+            isFirestore: isFirestore === 'true' || isFirestore === true,
+            docType: isFirestore ? (window.allWorkersData && window.allWorkersData[id] ? window.allWorkersData[id].docType : '') : '',
+            docUrl: isFirestore ? (window.allWorkersData && window.allWorkersData[id] ? window.allWorkersData[id].docUrl : '') : ''
+        };
+
+        if (document.getElementById('viewWorkName')) document.getElementById('viewWorkName').innerHTML = `<span>${decodedName || 'N/A'}</span>`;
+        if (document.getElementById('viewWorkPhone')) document.getElementById('viewWorkPhone').textContent = decodedPhone || 'N/A';
+        if (document.getElementById('viewWorkService')) document.getElementById('viewWorkService').textContent = decodedService || 'N/A';
+        if (document.getElementById('viewWorkExp')) document.getElementById('viewWorkExp').textContent = decodedExp || '0';
+        if (document.getElementById('viewWorkAddress')) document.getElementById('viewWorkAddress').textContent = decodedAddress || 'No address provided.';
+        const noteEl = document.getElementById('viewWorkNote');
+        if (noteEl) noteEl.textContent = decodedNote && decodedNote !== 'undefined' && decodedNote !== '' ? decodedNote : 'No additional notes or instructions provided for this worker.';
+        
+        // Show Document if available
+        const docSection = document.getElementById('viewWorkDocSection');
+        if (docSection) {
+            const workerData = window.allWorkersData[id] || {};
+            const docType = workerData.docType || currentViewingWorker.docType;
+            const docUrl = workerData.docUrl || currentViewingWorker.docUrl;
+
+            if (docUrl) {
+                docSection.style.display = 'block';
+                document.getElementById('viewWorkDocType').textContent = docType || 'Worker Document';
+                document.getElementById('viewWorkDocLink').href = docUrl;
+            } else {
+                docSection.style.display = 'none';
+            }
+        }
+        
+        // Fetch Assigned Customers
+        const customerListEl = document.getElementById('viewWorkCustomerList');
+        if (customerListEl) {
+            customerListEl.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted);"><i class="ph ph-spinner ph-spin"></i> Loading assigned customers...</div>';
+            try {
+                // Query customers where workerId matches this worker's ID
+                const q = query(collection(db, "customers"), where("workerId", "==", id));
+                const qs = await getDocs(q);
+                
+                if (qs.empty) {
+                    customerListEl.innerHTML = '<div style="padding: 1.5rem; text-align: center; color: var(--text-muted); background: #f8fafc; border-radius: 12px; border: 1px dashed #e2e8f0;">No customers assigned to this worker yet.</div>';
+                } else {
+                    customerListEl.innerHTML = '';
+                    qs.forEach(cDoc => {
+                        const c = cDoc.data();
+                        const item = document.createElement('div');
+                        item.className = 'assigned-customer-item';
+                        item.innerHTML = `
+                            <div class="cust-info">
+                                <div class="cust-name">${c.name}</div>
+                                <div class="cust-phone"><i class="ph ph-phone"></i> ${c.phone}</div>
+                            </div>
+                            <button class="btn btn-sm btn-outline" onclick="window.closeViewWorkerModal(); window.viewCustomerDetails('${encodeURIComponent(c.name)}', '${encodeURIComponent(c.phone)}', '${encodeURIComponent(c.address)}', '${encodeURIComponent(c.note)}', '${cDoc.id}', 'true', '${id}')">
+                                View Profile
+                            </button>
+                        `;
+                        customerListEl.appendChild(item);
+                    });
+                }
+            } catch (err) {
+                console.error("Error fetching worker customers:", err);
+                customerListEl.innerHTML = '<div style="padding: 1rem; color: #ef4444; font-size: 0.9rem;">Error loading assigned customers list.</div>';
+            }
+        }
+
+        modal.classList.remove('hidden');
+    }
+};
+
+window.openEditWorkerModal = function () {
+    if (!currentViewingWorker) return;
+    
+    document.getElementById('editWorkName').value = currentViewingWorker.name;
+    document.getElementById('editWorkPhone').value = currentViewingWorker.phone;
+    document.getElementById('editWorkService').value = currentViewingWorker.service || 'Cleaning';
+    document.getElementById('editWorkExp').value = currentViewingWorker.exp || '';
+    document.getElementById('editWorkAddress').value = currentViewingWorker.address;
+    document.getElementById('editWorkNote').value = currentViewingWorker.note === 'undefined' ? '' : currentViewingWorker.note;
+    
+    if (document.getElementById('editWorkDocType')) {
+        document.getElementById('editWorkDocType').value = currentViewingWorker.docType || 'Aadhar Card';
+    }
+    
+    document.getElementById('viewWorkerModal').classList.add('hidden');
+    document.getElementById('editWorkerModal').classList.remove('hidden');
+};
+
+window.closeEditWorkerModal = function () {
+    document.getElementById('editWorkerModal').classList.add('hidden');
+    document.getElementById('viewWorkerModal').classList.remove('hidden');
+};
+
+window.closeViewWorkerModal = function () {
+    const modal = document.getElementById('viewWorkerModal');
+    if (modal) modal.classList.add('hidden');
+};
+
+window.viewCustomerDetails = async function (name, phone, address, note, id, isFirestore, workerId) {
+    const modal = document.getElementById('viewCustomerModal');
+    if (modal) {
+        const decodedName = decodeURIComponent(name);
+        const decodedPhone = decodeURIComponent(phone);
+        const decodedAddress = decodeURIComponent(address);
+        const decodedNote = decodeURIComponent(note);
+        const decodedWorkerId = decodeURIComponent(workerId || '');
+
+        currentViewingCustomer = { 
+            name: decodedName, 
+            phone: decodedPhone, 
+            address: decodedAddress, 
+            note: decodedNote, 
+            id, 
+            isFirestore: isFirestore === 'true' || isFirestore === true,
+            workerId: decodedWorkerId
+        };
+
+        document.getElementById('viewCustName').innerHTML = `<span>${decodedName || 'N/A'}</span>`;
+        document.getElementById('viewCustPhone').textContent = decodedPhone || 'N/A';
+        document.getElementById('viewCustAddress').textContent = decodedAddress || 'No address provided.';
+        document.getElementById('viewCustNote').textContent = decodedNote && decodedNote !== 'undefined' && decodedNote !== '' ? decodedNote : 'No additional notes or instructions provided for this customer.';
+        
+        // Handle Assigned Worker Display
+        const workerSection = document.getElementById('viewCustWorkerSection');
+        if (decodedWorkerId) {
+            workerSection.style.display = 'block';
+            document.getElementById('viewCustWorkerName').textContent = 'Loading worker...';
+            document.getElementById('viewCustWorkerService').querySelector('span').textContent = '...';
+            document.getElementById('viewCustWorkerPhone').querySelector('span').textContent = '...';
+            
+            try {
+                const workerDoc = await getDoc(doc(db, "workers", decodedWorkerId));
+                if (workerDoc.exists()) {
+                    const w = workerDoc.data();
+                    document.getElementById('viewCustWorkerName').textContent = w.name || 'Unknown Worker';
+                    document.getElementById('viewCustWorkerService').querySelector('span').textContent = w.service || 'N/A';
+                    document.getElementById('viewCustWorkerPhone').querySelector('span').textContent = w.phone || 'N/A';
+                } else {
+                    document.getElementById('viewCustWorkerName').textContent = 'Worker not found';
+                }
+            } catch (err) {
+                console.error("Error fetching worker for customer view:", err);
+                document.getElementById('viewCustWorkerName').textContent = 'Error loading worker';
+            }
+        } else {
+            workerSection.style.display = 'none';
+        }
+
+        modal.classList.remove('hidden');
+    }
+};
+
+window.openEditCustomerModal = async function () {
+    if (!currentViewingCustomer) return;
+    
+    document.getElementById('editCustName').value = currentViewingCustomer.name;
+    document.getElementById('editCustPhone').value = currentViewingCustomer.phone;
+    document.getElementById('editCustAddress').value = currentViewingCustomer.address;
+    document.getElementById('editCustNote').value = currentViewingCustomer.note === 'undefined' ? '' : currentViewingCustomer.note;
+    
+    // Populate workers dropdown
+    const workerSelect = document.getElementById('editCustWorker');
+    if (workerSelect) {
+        workerSelect.innerHTML = '<option value="">-- No Worker Assigned --</option>';
+        try {
+            const q = query(collection(db, "workers"), orderBy("name", "asc"));
+            const qs = await getDocs(q);
+            qs.forEach(wDoc => {
+                const w = wDoc.data();
+                const opt = document.createElement('option');
+                opt.value = wDoc.id;
+                opt.textContent = `${w.name} (${w.service || 'N/A'})`;
+                workerSelect.appendChild(opt);
+            });
+            // Set current assigned worker
+            workerSelect.value = currentViewingCustomer.workerId || '';
+        } catch (err) {
+            console.error("Error populating workers dropdown:", err);
+        }
+    }
+
+    document.getElementById('viewCustomerModal').classList.add('hidden');
+    document.getElementById('editCustomerModal').classList.remove('hidden');
+};
+
+window.closeEditCustomerModal = function () {
+    document.getElementById('editCustomerModal').classList.add('hidden');
+    document.getElementById('viewCustomerModal').classList.remove('hidden');
+};
+
+window.closeViewCustomerModal = function () {
+    const modal = document.getElementById('viewCustomerModal');
+    if (modal) modal.classList.add('hidden');
 };
 
 // --- CUSTOM POPUP LOGIC ---
@@ -238,11 +537,227 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Add Customer Form Submit
+    const addCustomerForm = document.getElementById('addCustomerForm');
+    if (addCustomerForm) {
+        addCustomerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('addCustSubmitBtn');
+            const name = document.getElementById('addCustName').value;
+            const phone = document.getElementById('addCustPhone').value;
+            const address = document.getElementById('addCustAddress').value;
+            const note = document.getElementById('addCustNote').value;
+
+            try {
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Saving...';
+                }
+
+                const workerIdValue = document.getElementById('addCustWorker').value;
+
+                await addDoc(collection(db, "customers"), {
+                    name,
+                    phone,
+                    address,
+                    note,
+                    workerId: workerIdValue,
+                    createdAt: serverTimestamp()
+                });
+
+                await showAlert("Customer Added", "Customer details have been successfully saved.");
+                window.closeAddCustomerModal();
+                await loadCustomerData(true);
+            } catch (err) {
+                console.error("Error adding customer:", err);
+                // Fallback to local storage if Firestore fails
+                const workerIdValue = document.getElementById('addCustWorker').value;
+                const localCustomers = JSON.parse(localStorage.getItem('KAMWALLE_customers')) || [];
+                localCustomers.push({
+                    name, phone, address, note, workerId: workerIdValue, createdAt: new Date().toISOString()
+                });
+                localStorage.setItem('KAMWALLE_customers', JSON.stringify(localCustomers));
+                
+                await showAlert("Saved Locally", "Customer saved to local storage (Firestore error).");
+                window.closeAddCustomerModal();
+                await loadCustomerData(true);
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="ph ph-floppy-disk"></i> Save Customer';
+                }
+            }
+        });
+    }
+
+    // Edit Customer Form Submit
+    const editCustomerForm = document.getElementById('editCustomerForm');
+    if (editCustomerForm) {
+        editCustomerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentViewingCustomer) return;
+
+            const name = document.getElementById('editCustName').value;
+            const phone = document.getElementById('editCustPhone').value;
+            const address = document.getElementById('editCustAddress').value;
+            const note = document.getElementById('editCustNote').value;
+
+            try {
+                const saveBtn = editCustomerForm.querySelector('button[type="submit"]');
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Saving...';
+                }
+
+                const workerIdSelection = document.getElementById('editCustWorker').value;
+
+                if (currentViewingCustomer.isFirestore) {
+                    await updateDoc(doc(db, "customers", currentViewingCustomer.id), {
+                        name, phone, address, note,
+                        workerId: workerIdSelection,
+                        updatedAt: serverTimestamp()
+                    });
+                } else {
+                    let customers = JSON.parse(localStorage.getItem('KAMWALLE_customers')) || [];
+                    const idx = parseInt(currentViewingCustomer.id);
+                    if (!isNaN(idx)) {
+                        customers[idx] = { 
+                            ...customers[idx], 
+                            name, phone, address, note,
+                            workerId: workerIdSelection,
+                            updatedAt: new Date().toISOString()
+                        };
+                        localStorage.setItem('KAMWALLE_customers', JSON.stringify(customers));
+                    }
+                }
+
+                await showAlert("Updated", "Customer details have been successfully updated.");
+                document.getElementById('editCustomerModal').classList.add('hidden');
+                await loadCustomerData(true);
+            } catch (err) {
+                console.error("Update Error:", err);
+                await showAlert("Error", err.message, "ph-warning-circle");
+            } finally {
+                const saveBtn = editCustomerForm.querySelector('button[type="submit"]');
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = 'Save Changes';
+                }
+            }
+        });
+    }
+
+    // Add Worker Form Submit
+    const addWorkerForm = document.getElementById('addWorkerForm');
+    if (addWorkerForm) {
+        addWorkerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('addWorkSubmitBtn');
+            const name = document.getElementById('addWorkName').value;
+            const phone = document.getElementById('addWorkPhone').value;
+            const service = document.getElementById('addWorkService').value;
+            const exp = document.getElementById('addWorkExp').value;
+            const address = document.getElementById('addWorkAddress').value;
+            const note = document.getElementById('addWorkNote').value;
+
+            try {
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Saving...';
+                }
+
+                const docType = document.getElementById('addWorkDocType').value;
+                const fileInput = document.getElementById('addWorkFile');
+                let docUrl = "";
+
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    docUrl = await uploadToCloudinary(file);
+                }
+
+                await addDoc(collection(db, "workers"), {
+                    name, phone, service, exp, address, note,
+                    docType, docUrl,
+                    createdAt: serverTimestamp()
+                });
+
+                await showAlert("Worker Added", "Worker details have been successfully saved.");
+                window.closeAddWorkerModal();
+                await loadWorkerData(true);
+            } catch (err) {
+                console.error("Error adding worker:", err);
+                await showAlert("Error", err.message, "ph-warning-circle");
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="ph ph-floppy-disk"></i> Save Worker';
+                }
+            }
+        });
+    }
+
+    // Edit Worker Form Submit
+    const editWorkerForm = document.getElementById('editWorkerForm');
+    if (editWorkerForm) {
+        editWorkerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentViewingWorker) return;
+
+            const name = document.getElementById('editWorkName').value;
+            const phone = document.getElementById('editWorkPhone').value;
+            const service = document.getElementById('editWorkService').value;
+            const exp = document.getElementById('editWorkExp').value;
+            const address = document.getElementById('editWorkAddress').value;
+            const note = document.getElementById('editWorkNote').value;
+
+            try {
+                const saveBtn = editWorkerForm.querySelector('button[type="submit"]');
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Saving...';
+                }
+
+                if (currentViewingWorker.isFirestore) {
+                    const docType = document.getElementById('editWorkDocType').value;
+                    const fileInput = document.getElementById('editWorkFile');
+                    let docUrl = currentViewingWorker.docUrl || "";
+
+                    if (fileInput.files.length > 0) {
+                        const file = fileInput.files[0];
+                        docUrl = await uploadToCloudinary(file);
+                    }
+
+                    await updateDoc(doc(db, "workers", currentViewingWorker.id), {
+                        name, phone, service, exp, address, note,
+                        docType, docUrl,
+                        updatedAt: serverTimestamp()
+                    });
+                }
+
+                await showAlert("Updated", "Worker details have been successfully updated.");
+                document.getElementById('editWorkerModal').classList.add('hidden');
+                await loadWorkerData(true);
+            } catch (err) {
+                console.error("Update Error:", err);
+                await showAlert("Error", err.message, "ph-warning-circle");
+            } finally {
+                const saveBtn = editWorkerForm.querySelector('button[type="submit"]');
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = 'Save Changes';
+                }
+            }
+        });
+    }
+
     // Attach internal functions to window for any dynamic calls if needed
     window.loadReviewData = loadReviewData;
+    window.loadCustomerData = loadCustomerData;
     window.deleteContact = deleteContact;
     window.deleteBooking = deleteBooking;
     window.deleteUser = deleteUser;
+    window.deleteCustomer = deleteCustomer;
+    window.deleteWorker = deleteWorker;
     window.deleteReview = deleteReview;
 });
 
@@ -256,6 +771,8 @@ async function showDashboard() {
     loadContactData();
     loadBookingData();
     loadUserData();
+    loadCustomerData();
+    loadWorkerData();
     loadReviewData();
 }
 
@@ -594,6 +1111,214 @@ async function deleteReview(id, isFirestore, btnElement) {
                 btnElement.disabled = false;
                 btnElement.innerHTML = '<i class="ph ph-trash"></i> Delete';
             }
+        }
+    }
+}
+
+async function loadCustomerData(forceSync = false) {
+    const tbody = document.getElementById('customersTableBody');
+    const emptyCustomers = document.getElementById('emptyCustomers');
+    const tableContainer = document.getElementById('customersTableContainer');
+    const totalStat = document.getElementById('totalCustomersStat');
+
+    if (!tbody) return;
+
+    if (forceSync) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;"><i class="ph ph-spinner ph-spin"></i> Loading...</td></tr>';
+    }
+
+    let firestoreCustomers = [];
+    try {
+        const q = query(collection(db, "customers"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            firestoreCustomers.push({ ...doc.data(), firestoreId: doc.id, isFromFirestore: true });
+        });
+    } catch (error) {
+        console.error("Firestore fetch error:", error);
+    }
+
+    let localCustomers = JSON.parse(localStorage.getItem('KAMWALLE_customers')) || [];
+    
+    // Merge logic
+    const allCustomers = [
+        ...firestoreCustomers,
+        ...localCustomers.map((c, idx) => ({ ...c, localId: idx, isFromFirestore: false }))
+    ];
+
+    if (totalStat) totalStat.textContent = allCustomers.length;
+
+    if (allCustomers.length === 0) {
+        tbody.innerHTML = '';
+        if (tableContainer) tableContainer.style.display = 'none';
+        if (emptyCustomers) emptyCustomers.classList.remove('hidden');
+        return;
+    }
+
+    if (emptyCustomers) emptyCustomers.classList.add('hidden');
+    if (tableContainer) tableContainer.style.display = 'block';
+
+    tbody.innerHTML = allCustomers.map((c, index) => {
+        const dateObj = c.createdAt ? (c.createdAt.seconds ? new Date(c.createdAt.seconds * 1000) : new Date(c.createdAt)) : new Date();
+        const dateStr = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const idToPass = c.firestoreId || c.localId;
+        const isFS = !!c.isFromFirestore;
+        
+        const encName = encodeURIComponent(c.name || '');
+        const encPhone = encodeURIComponent(c.phone || '');
+        const encAddr = encodeURIComponent(c.address || '');
+        const encNote = encodeURIComponent(c.note || '');
+        const encWorkerId = encodeURIComponent(c.workerId || '');
+
+        return `
+            <tr>
+                <td class="td-date">${dateStr}</td>
+                <td class="td-name"><strong>${c.name}</strong></td>
+                <td>${c.phone}</td>
+                <td style="max-width: 200px; font-size: 0.9rem;" class="truncate-text">${(c.address || '').substring(0, 30)}${c.address && c.address.length > 30 ? '...' : ''}</td>
+                <td>
+                    <button class="btn btn-sm btn-outline" style="margin-right: 5px;" onclick="window.viewCustomerDetails('${encName}', '${encPhone}', '${encAddr}', '${encNote}', '${idToPass}', ${isFS}, '${encWorkerId}')" type="button">
+                        <i class="ph ph-eye"></i> View
+                    </button>
+                    <button class="btn btn-sm btn-delete" data-customer-id="${String(idToPass).replace(/"/g, '&quot;')}" data-is-firestore="${isFS}" type="button">
+                        <i class="ph ph-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    document.querySelectorAll('#customersTableBody .btn-delete').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const customerId = this.getAttribute('data-customer-id');
+            const isFirestore = this.getAttribute('data-is-firestore') === 'true';
+            deleteCustomer(customerId, isFirestore, this);
+        });
+    });
+}
+
+async function deleteCustomer(id, isFirestore, btnElement) {
+    if (id === undefined || id === null || id === "") return;
+    const confirmed = await showConfirm("Delete Customer?", "Are you sure you want to delete this customer record?");
+    if (confirmed) {
+        try {
+            if (btnElement) {
+                btnElement.disabled = true;
+                btnElement.innerHTML = '<i class="ph ph-spinner ph-spin"></i>...';
+            }
+            if (isFirestore) {
+                await deleteDoc(doc(db, "customers", id));
+            } else {
+                let customers = JSON.parse(localStorage.getItem('KAMWALLE_customers')) || [];
+                const idx = parseInt(id);
+                if (!isNaN(idx)) {
+                    customers.splice(idx, 1);
+                    localStorage.setItem('KAMWALLE_customers', JSON.stringify(customers));
+                }
+            }
+            await loadCustomerData(true);
+            await showAlert("Deleted", "The customer record has been removed.");
+        } catch (err) {
+            console.error("Delete Error:", err);
+            await showAlert("Error", err.message, "ph-warning-circle");
+        }
+    }
+}
+
+async function loadWorkerData(forceSync = false) {
+    const tbody = document.getElementById('workersTableBody');
+    const emptyWorkers = document.getElementById('emptyWorkers');
+    const tableContainer = document.getElementById('workersTableContainer');
+    const totalStat = document.getElementById('totalWorkersStat');
+
+    if (!tbody) return;
+
+    if (forceSync) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;"><i class="ph ph-spinner ph-spin"></i> Loading...</td></tr>';
+    }
+
+    let workers = [];
+    try {
+        const q = query(collection(db, "workers"), orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        window.allWorkersData = {}; // Reset
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            workers.push({ ...data, firestoreId: doc.id, isFromFirestore: true });
+            window.allWorkersData[doc.id] = data;
+        });
+    } catch (error) {
+        console.error("Firestore worker fetch error:", error);
+    }
+
+    if (totalStat) totalStat.textContent = workers.length;
+
+    if (workers.length === 0) {
+        tbody.innerHTML = '';
+        if (tableContainer) tableContainer.style.display = 'none';
+        if (emptyWorkers) emptyWorkers.classList.remove('hidden');
+        return;
+    }
+
+    if (emptyWorkers) emptyWorkers.classList.add('hidden');
+    if (tableContainer) tableContainer.style.display = 'block';
+
+    tbody.innerHTML = workers.map((w, index) => {
+        const dateObj = w.createdAt ? (w.createdAt.seconds ? new Date(w.createdAt.seconds * 1000) : new Date(w.createdAt)) : new Date();
+        const dateStr = dateObj.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const idToPass = w.firestoreId;
+        const isFS = true;
+        
+        const encName = encodeURIComponent(w.name || '');
+        const encPhone = encodeURIComponent(w.phone || '');
+        const encService = encodeURIComponent(w.service || '');
+        const encExp = encodeURIComponent(w.exp || '');
+        const encAddr = encodeURIComponent(w.address || '');
+        const encNote = encodeURIComponent(w.note || '');
+
+        return `
+            <tr>
+                <td class="td-date">${dateStr}</td>
+                <td class="td-name"><strong>${w.name}</strong></td>
+                <td>${w.phone}</td>
+                <td><span class="service-tag" style="background: var(--primary-alpha); color: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">${w.service || 'N/A'}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline" style="margin-right: 5px;" onclick="window.viewWorkerDetails('${encName}', '${encPhone}', '${encService}', '${encExp}', '${encAddr}', '${encNote}', '${idToPass}', ${isFS})" type="button">
+                        <i class="ph ph-eye"></i> View
+                    </button>
+                    <button class="btn btn-sm btn-delete" data-worker-id="${String(idToPass).replace(/"/g, '&quot;')}" type="button">
+                        <i class="ph ph-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    document.querySelectorAll('#workersTableBody .btn-delete').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const workerId = this.getAttribute('data-worker-id');
+            deleteWorker(workerId, this);
+        });
+    });
+}
+
+async function deleteWorker(id, btnElement) {
+    if (id === undefined || id === null || id === "") return;
+    const confirmed = await showConfirm("Delete Worker?", "Are you sure you want to delete this worker record?");
+    if (confirmed) {
+        try {
+            if (btnElement) {
+                btnElement.disabled = true;
+                btnElement.innerHTML = '<i class="ph ph-spinner ph-spin"></i>...';
+            }
+            await deleteDoc(doc(db, "workers", id));
+            await loadWorkerData(true);
+            await showAlert("Deleted", "The worker record has been removed.");
+        } catch (err) {
+            console.error("Delete Error:", err);
+            await showAlert("Error", err.message, "ph-warning-circle");
         }
     }
 }

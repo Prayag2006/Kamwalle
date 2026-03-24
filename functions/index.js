@@ -72,3 +72,4 @@ exports.sendCustomResetEmail = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('internal', 'Unable to send password reset email. ' + error.message);
     }
 });
+
