@@ -54,6 +54,19 @@ const uploadToCloudinary = async (file) => {
     return data.secure_url;
 };
 
+// --- Worker ID Generation ---
+const generateWorkerId = async () => {
+    let isUnique = false;
+    let newId = "";
+    while (!isUnique) {
+        newId = "KW-" + Math.floor(100000 + Math.random() * 900000); // KW-123456
+        const q = query(collection(db, "workers"), where("workerId", "==", newId));
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) isUnique = true;
+    }
+    return newId;
+};
+
 // ---- API EXPORTS (for HTML onclick) ----
 window.switchTab = function (tab) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -202,6 +215,13 @@ window.viewWorkerDetails = async function (name, phone, service, exp, address, n
         if (document.getElementById('viewWorkName')) document.getElementById('viewWorkName').innerHTML = `<span>${decodedName || 'N/A'}</span>`;
         if (document.getElementById('viewWorkPhone')) document.getElementById('viewWorkPhone').textContent = decodedPhone || 'N/A';
         if (document.getElementById('viewWorkService')) document.getElementById('viewWorkService').textContent = decodedService || 'N/A';
+        
+        // Show Worker ID
+        const idDisplay = document.getElementById('viewWorkGeneratedId');
+        if (idDisplay) {
+            const workerData = window.allWorkersData[id] || {};
+            idDisplay.textContent = workerData.workerId || 'N/A';
+        }
         if (document.getElementById('viewWorkExp')) document.getElementById('viewWorkExp').textContent = decodedExp || '0';
         if (document.getElementById('viewWorkAddress')) document.getElementById('viewWorkAddress').textContent = decodedAddress || 'No address provided.';
         const noteEl = document.getElementById('viewWorkNote');
@@ -675,9 +695,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     docUrl = await uploadToCloudinary(file);
                 }
 
+                const workerId = await generateWorkerId();
+
                 await addDoc(collection(db, "workers"), {
                     name, phone, service, exp, address, note,
-                    docType, docUrl,
+                    docType, docUrl, workerId,
                     createdAt: serverTimestamp()
                 });
 
@@ -1280,7 +1302,10 @@ async function loadWorkerData(forceSync = false) {
         return `
             <tr>
                 <td class="td-date">${dateStr}</td>
-                <td class="td-name"><strong>${w.name}</strong></td>
+                <td class="td-name">
+                    <strong>${w.name}</strong><br>
+                    <small style="color: var(--text-muted); font-family: monospace;">ID: ${w.workerId || 'N/A'}</small>
+                </td>
                 <td>${w.phone}</td>
                 <td><span class="service-tag" style="background: var(--primary-alpha); color: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">${w.service || 'N/A'}</span></td>
                 <td>

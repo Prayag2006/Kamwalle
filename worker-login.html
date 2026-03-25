@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worker Login - KAMWALLE</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css"> <!-- Reusing some admin login styles -->
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .worker-login-box {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .id-input-wrapper {
+            position: relative;
+            margin-top: 2rem;
+        }
+        .id-input-wrapper i {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+        .id-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3.5rem;
+            border-radius: 12px;
+            border: 2px solid #eef2f6;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .id-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-alpha);
+        }
+        .login-btn {
+            width: 100%;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .login-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(15, 98, 254, 0.3);
+        }
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .error-msg {
+            color: #ef4444;
+            background: #fef2f2;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="worker-login-box">
+        <div class="logo">
+            <i class="ph-fill ph-identification-badge"></i>
+            <span>KAMWALLE</span>
+        </div>
+        <h2 style="margin-top: 1.5rem; font-size: 1.75rem;">Worker Login</h2>
+        <p style="color: var(--text-muted); margin-top: 0.5rem;">Enter your unique Worker ID to access your profile.</p>
+
+        <form id="workerLoginForm">
+            <div class="id-input-wrapper">
+                <i class="ph ph-key"></i>
+                <input type="text" id="workerId" class="id-input" placeholder="KW-123456" required>
+            </div>
+            <div id="errorMessage" class="error-msg"></div>
+            <button type="submit" id="loginBtn" class="login-btn">
+                <span>Login Securely</span>
+                <i class="ph ph-arrow-right"></i>
+            </button>
+        </form>
+
+        <p style="margin-top: 2rem; font-size: 0.875rem; color: var(--text-muted);">
+            Don't have an ID? Contact your administrator.
+        </p>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Firebase Config (Must match admin.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCtJR1H_LDRD57whrjRt-5TCWolO-CQISM",
+            authDomain: "kamwala-app-xyz123.firebaseapp.com",
+            projectId: "kamwala-app-xyz123",
+            storageBucket: "kamwala-app-xyz123.firebasestorage.app",
+            messagingSenderId: "529469429266",
+            appId: "1:529469429266:web:99cc209cc4e7bb0c5c2acb"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const loginForm = document.getElementById('workerLoginForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMessage = document.getElementById('errorMessage');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('workerId').value.trim().toUpperCase();
+            
+            errorMessage.style.display = 'none';
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="ph ph-spinner ph-spin"></i> Verifying...';
+
+            try {
+                const q = query(collection(db, "workers"), where("workerId", "==", id));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    const workerData = querySnapshot.docs[0].data();
+                    const workerDocId = querySnapshot.docs[0].id;
+                    
+                    // Store session
+                    localStorage.setItem('kw_worker_session', JSON.stringify({
+                        id: workerDocId,
+                        workerId: workerData.workerId,
+                        name: workerData.name
+                    }));
+
+                    window.location.href = 'worker-dashboard.html';
+                } else {
+                    errorMessage.textContent = 'Invalid Worker ID. Please try again.';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (err) {
+                console.error(err);
+                errorMessage.textContent = 'Connection error. Please check your internet.';
+                errorMessage.style.display = 'block';
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span>Login Securely</span> <i class="ph ph-arrow-right"></i>';
+            }
+        });
+    </script>
+</body>
+</html>
